@@ -62,3 +62,41 @@ $productRoutes = function () {
     Route::post('deliveries/{delivery}/replay', [EventController::class, 'replay'])->name('delivery.replay');
 };
 Route::middleware(['auth:sanctum', 'verified', 'audit_mutation'])->prefix('dashboard/v1')->name('dashboard.')->group($productRoutes);
+Route::middleware(['auth:sanctum', 'super_admin', 'support_context', 'audit_mutation'])->prefix('support/v1/sessions/{supportSession}')->name('support.')->group($productRoutes);
+
+Route::middleware(['auth:sanctum', 'super_admin'])->prefix('admin/v1')->name('admin.')->group(function () {
+    Route::post('step-up', [AdminController::class, 'stepUp'])->middleware('throttle:5,1');
+    Route::middleware(['admin_mutation', 'audit_mutation'])->group(function () {
+        Route::get('overview', [AdminController::class, 'overview']);
+        Route::get('users', [AdminController::class, 'users']);
+        Route::get('users/{user}', [AdminController::class, 'user']);
+        Route::patch('users/{user}', [AdminController::class, 'updateUser'])->name('user.update');
+        Route::post('users/{user}/actions', [AdminController::class, 'userAction'])->name('user.action');
+        Route::get('workspaces', [AdminController::class, 'workspaces']);
+        Route::get('workspaces/{workspace}', [AdminController::class, 'workspace']);
+        Route::post('workspaces/{workspace}/actions', [AdminController::class, 'workspaceAction'])->name('workspace.action');
+        Route::put('workspaces/{workspace}/limits', [AdminController::class, 'limit'])->name('workspace.limit');
+        Route::get('projects', [AdminController::class, 'projects']);
+        Route::get('projects/{project}', [AdminController::class, 'project']);
+        Route::patch('workspaces/{workspace}/members/{membership}', [AdminController::class, 'member'])->name('member.update');
+        Route::delete('workspaces/{workspace}/members/{membership}', [AdminController::class, 'removeMember'])->name('member.remove');
+        Route::delete('workspaces/{workspace}/invitations/{invitation}', [AdminController::class, 'revokeInvitation'])->name('invitation.revoke');
+        Route::post('projects/{project}/actions', [AdminController::class, 'projectAction'])->name('project.action');
+        Route::delete('keys/{key}', [AdminController::class, 'revokeKey'])->name('key.revoke');
+        Route::post('sources/{source}/actions', [AdminController::class, 'sourceAction'])->name('source.action');
+        Route::patch('endpoints/{endpoint}', [AdminController::class, 'endpointAction'])->name('endpoint.action');
+        Route::get('events', [AdminController::class, 'events']);
+        Route::post('events/{event}/payload', [AdminController::class, 'payload'])->name('payload.read');
+        Route::post('attempts/{attempt}/response', [AdminController::class, 'attemptPayload'])->name('response.read');
+        Route::get('deliveries', [AdminController::class, 'deliveries']);
+        Route::get('deliveries/{delivery}', [AdminController::class, 'delivery']);
+        Route::post('deliveries/replay', [AdminController::class, 'replay'])->name('delivery.replay');
+        Route::get('settings', [AdminController::class, 'settings']);
+        Route::put('settings', [AdminController::class, 'updateSettings'])->name('setting.update');
+        Route::get('audit', [AdminController::class, 'audit']);
+        Route::get('health', [AdminController::class, 'health']);
+        Route::get('support-sessions', [SupportController::class, 'index']);
+        Route::post('support-sessions', [SupportController::class, 'store'])->name('support.create');
+    });
+    Route::delete('support-sessions/{supportSession}', [SupportController::class, 'destroy'])->middleware('audit_mutation')->name('support.end');
+});
