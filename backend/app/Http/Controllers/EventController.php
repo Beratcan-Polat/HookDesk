@@ -127,11 +127,11 @@ class EventController extends Controller
         abort_unless(is_object($object), 422, 'data_must_be_object');
         [$event] = app(AcceptEvent::class)->execute($project, $data['type'], $object, $r->getContent(), $r->header('Idempotency-Key'), 'dashboard');
 
-        return response()->json(['data' => $event],202);
+        return response()->json(['data' => $event], 202);
     }
 
     private function pageSize(Request $r): int
     {
-        return min(100,max(1,(int) $r->input('per_page',25)));
+        return min(100, max(1, (int) $r->input('per_page', 25)));
     }
 }

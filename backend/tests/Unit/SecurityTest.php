@@ -34,5 +34,5 @@ it('rechecks all DNS addresses', function () {
 });
 it('honors bounded retry-after without an immediate retry storm', function () {
     $p = new RetryPolicy;
-    expect($p->delay(1, '3600'))->toBe(3600)->and($p->delay(1, '999999'))->toBe(3600)->and($p->delay(1))->toBeBetween(10,12);
+    expect($p->delay(1, '3600'))->toBe(3600)->and($p->delay(1, '999999'))->toBe(3600)->and($p->delay(1))->toBeBetween(10, 12);
 });

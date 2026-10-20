@@ -84,6 +84,6 @@ class CredentialController extends Controller
         $token = Str::random(64);
         $source->update(['token_hash' => hash('sha256', $token)]);
 
-        return response()->json(['url' => rtrim(config('app.url'),'/').'/ingest/'.$token])->header('Cache-Control','no-store');
+        return response()->json(['url' => rtrim(config('app.url'), '/').'/ingest/'.$token])->header('Cache-Control', 'no-store');
     }
 }

@@ -1,0 +1,85 @@
+name: hookdesk
+x-app: &app
+  image: ${HOOKDESK_APP_IMAGE:-hookdesk-app:local}
+  build:
+    context: .
+    dockerfile: infra/docker/backend.Dockerfile
+    target: base
+  env_file: .env
+  environment:
+    APP_ENV: production
+    APP_DEBUG: 'false'
+    SESSION_SECURE_COOKIE: 'true'
+  volumes:
+    - app_storage:/srv/backend/storage
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+  networks: [backend, outbound]
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-hookdesk}
+      POSTGRES_USER: ${DB_USERNAME:-hookdesk}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+    volumes: [postgres_data:/var/lib/postgresql]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [backend]
+  redis:
+    image: redis:8-alpine
+    command: redis-server --appendonly yes --maxmemory-policy noeviction
+    volumes: [redis_data:/data]
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [backend]
+  app:
+    <<: *app
+  worker:
+    <<: *app
+    command: php artisan queue:work redis --queue=deliveries,default --timeout=20 --tries=1 --sleep=1 --max-time=3600
+  scheduler:
+    <<: *app
+    command: php artisan schedule:work
+  receiver:
+    <<: *app
+    environment:
+      APP_ENV: production
+      APP_DEBUG: 'false'
+      APP_ROLE: receiver
+    command: php artisan serve --host=0.0.0.0 --port=8080
+    networks: [backend]
+  gateway:
+    image: ${HOOKDESK_GATEWAY_IMAGE:-hookdesk-gateway:local}
+    build:
+      context: .
+      dockerfile: infra/docker/gateway.Dockerfile
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN}
+    ports: ['80:80', '443:443', '443:443/udp']
+    volumes: [caddy_data:/data, caddy_config:/config]
+    depends_on: [app]
+    restart: unless-stopped
+    networks: [backend, outbound]
+networks:
+  backend:
+    internal: true
+  outbound: {}
+volumes:
+  postgres_data: {}
+  redis_data: {}
+  app_storage: {}
+  caddy_data: {}
+  caddy_config: {}

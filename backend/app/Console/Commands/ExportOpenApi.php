@@ -107,8 +107,8 @@ class ExportOpenApi extends Command
         $json = json_encode($document, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
         foreach ([base_path('../docs/api/openapi.json'), base_path('../frontend/public/openapi.json')] as $path) {
             if (! is_dir(dirname($path))) {
-                mkdir(dirname($path),0755,true);
-            }file_put_contents($path,$json."\n");
+                mkdir(dirname($path), 0755, true);
+            }file_put_contents($path, $json."\n");
         }
         $this->info('OpenAPI exported from '.count($paths).' routes.');
 

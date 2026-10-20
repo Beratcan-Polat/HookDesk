@@ -1,0 +1,146 @@
+name: HookDesk CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: hookdesk_test
+          POSTGRES_USER: hookdesk
+          POSTGRES_PASSWORD: ci_test_password
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U hookdesk" --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:8-alpine
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      APP_ENV: testing
+      APP_KEY: base64:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: hookdesk_test
+      DB_USERNAME: hookdesk
+      DB_PASSWORD: ci_test_password
+      REDIS_CLIENT: predis
+      REDIS_HOST: 127.0.0.1
+      RUN_REDIS_TESTS: 'true'
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, mbstring, bcmath, pcntl, curl
+          coverage: none
+      - run: cp .env.example .env
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: php vendor/bin/pint --test
+      - run: php vendor/bin/phpstan analyse --memory-limit=512M --no-progress
+      - run: php vendor/bin/pest
+      - run: php artisan hookdesk:openapi && git diff --exit-code -- ../docs/api/openapi.json ../frontend/public/openapi.json
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run build
+  containers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp .env.example .env && docker compose config --quiet && docker compose -f compose.production.yaml config --quiet
+      - run: docker compose build app && docker compose -f compose.production.yaml build gateway
+  browser:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: hookdesk_browser
+          POSTGRES_USER: hookdesk
+          POSTGRES_PASSWORD: ci_test_password
+        ports: ['5432:5432']
+        options: --health-cmd 'pg_isready -U hookdesk' --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:8-alpine
+        ports: ['6379:6379']
+        options: --health-cmd 'redis-cli ping' --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      APP_ENV: testing
+      APP_KEY: base64:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+      APP_URL: http://localhost:5173
+      FRONTEND_URL: http://localhost:5173
+      SANCTUM_STATEFUL_DOMAINS: localhost:5173
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: hookdesk_browser
+      DB_USERNAME: hookdesk
+      DB_PASSWORD: ci_test_password
+      SESSION_DRIVER: database
+      QUEUE_CONNECTION: redis
+      CACHE_STORE: redis
+      REDIS_CLIENT: predis
+      REDIS_HOST: 127.0.0.1
+      MAIL_MAILER: log
+      RECEIVER_URL: http://127.0.0.1:8001
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, mbstring, curl, bcmath, pcntl
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: cp backend/.env.example backend/.env
+      - run: composer install --working-dir=backend --no-interaction --prefer-dist --no-progress
+      - run: npm ci --prefix frontend
+      - run: cd frontend && npx playwright install --with-deps chromium
+      - name: Prepare isolated browser fixtures
+        run: |
+          mkdir -p .runtime
+          cd backend
+          php artisan migrate --force
+          php artisan hookdesk:demo > ../.runtime/browser-user.txt
+          php tests/Support/seed-browser.php > ../.runtime/browser-admin.json
+          echo "E2E_EMAIL=$(sed -n 's/^Email: //p' ../.runtime/browser-user.txt)" >> "$GITHUB_ENV"
+          echo "E2E_PASSWORD=$(sed -n 's/^Generated local password: //p' ../.runtime/browser-user.txt)" >> "$GITHUB_ENV"
+          echo "E2E_ADMIN_FILE=$GITHUB_WORKSPACE/.runtime/browser-admin.json" >> "$GITHUB_ENV"
+      - name: Start application services
+        run: |
+          cd backend
+          php -S 127.0.0.1:8000 -t public > ../.runtime/api.log 2>&1 &
+          APP_ROLE=receiver php -S 127.0.0.1:8001 -t public > ../.runtime/receiver.log 2>&1 &
+          php artisan queue:work redis --queue=deliveries,default --timeout=20 --tries=1 > ../.runtime/worker.log 2>&1 &
+          php artisan schedule:work > ../.runtime/scheduler.log 2>&1 &
+          cd ../frontend
+          npm run dev -- --host 127.0.0.1 > ../.runtime/frontend.log 2>&1 &
+          for attempt in $(seq 1 30); do curl -fsS http://localhost:5173/ && break || sleep 1; done
+      - run: cd frontend && npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-test-report
+          path: frontend/playwright-report

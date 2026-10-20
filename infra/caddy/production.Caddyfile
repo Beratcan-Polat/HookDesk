@@ -1,0 +1,29 @@
+{$DOMAIN} {
+	encode zstd gzip
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy same-origin
+		X-Frame-Options DENY
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+	}
+	@receiver path /receive/*
+	respond @receiver 404
+	@backend path /api/* /sanctum/* /login /logout /register /email/* /user/* /two-factor-challenge /ingest/* /pending-email/* /up
+	handle @backend {
+		root * /srv/backend/public
+		php_fastcgi app:9000
+	}
+	@password {
+		path /forgot-password /reset-password
+		method POST
+	}
+	handle @password {
+		root * /srv/backend/public
+		php_fastcgi app:9000
+	}
+	handle {
+		root * /srv/frontend
+		try_files {path} /index.html
+		file_server
+	}
+}
