@@ -6,5 +6,6 @@ use App\Http\Controllers\ReceiverController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => response()->json(['service' => 'HookDesk', 'version' => '1.0.0']));
+Route::post('/ingest/{token}', [EventController::class, 'ingest'])->middleware('throttle:120,1');
 Route::post('/receive/{endpoint}', [ReceiverController::class, 'receive']);
 Route::get('/pending-email/{user}/{hash}', [AccountController::class, 'confirmEmail'])->middleware(['auth', 'signed'])->name('pending-email.verify');

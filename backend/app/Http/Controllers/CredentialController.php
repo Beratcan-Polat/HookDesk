@@ -48,4 +48,42 @@ class CredentialController extends Controller
         return response()->noContent();
     }
 
+    public function sources(Project $project)
+    {
+        app(Access::class)->project($project);
+
+        return ['data' => WebhookSource::where('project_id', $project->id)->latest()->get()];
+    }
+
+    public function createSource(Request $r, Project $project)
+    {
+        app(Access::class)->project($project, 'write');
+        $data = $r->validate(['name' => 'required|string|max:100', 'event_type' => 'required|string|max:100|regex:/^[a-zA-Z0-9_.-]+$/', 'mode' => 'required|in:capture_only,capture_and_forward']);
+        $token = Str::random(64);
+        $s = DB::transaction(function () use ($project, $data, $token) {
+            Project::whereKey($project->id)->lockForUpdate()->firstOrFail();
+            abort_if(WebhookSource::where('project_id', $project->id)->count() >= app(Settings::class)->limit('sources', $project->workspace), 422, 'source_limit_reached');
+
+            return WebhookSource::create([...$data, 'project_id' => $project->id, 'token_hash' => hash('sha256', $token)]);
+        }, 3);
+
+        return response()->json(['data' => $s, 'url' => rtrim(config('app.url'), '/').'/ingest/'.$token], 201)->header('Cache-Control', 'no-store');
+    }
+
+    public function updateSource(Request $r, WebhookSource $source)
+    {
+        app(Access::class)->project($source->project, 'write');
+        $source->update($r->validate(['name' => 'sometimes|required|string|max:100', 'event_type' => 'sometimes|required|string|max:100|regex:/^[a-zA-Z0-9_.-]+$/', 'mode' => 'sometimes|in:capture_only,capture_and_forward', 'enabled' => 'sometimes|boolean']));
+
+        return ['data' => $source];
+    }
+
+    public function rotateSource(WebhookSource $source)
+    {
+        app(Access::class)->project($source->project, 'write');
+        $token = Str::random(64);
+        $source->update(['token_hash' => hash('sha256', $token)]);
+
+        return response()->json(['url' => rtrim(config('app.url'),'/').'/ingest/'.$token])->header('Cache-Control','no-store');
+    }
 }

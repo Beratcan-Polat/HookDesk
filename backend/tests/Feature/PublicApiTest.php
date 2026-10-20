@@ -15,3 +15,11 @@ it('accepts project-scoped requests and rejects revoked credentials', function (
     $key->update(['revoked_at' => now()]);
     $this->postJson('/api/v1/events', ['type' => 'order.created', 'data' => (object) []])->assertUnauthorized();
 });
+it('does not expose source hashes and closes rotated source addresses', function () {
+    [$u,$w,$p] = hookdeskFixture();
+    $s = WebhookSource::create(['project_id' => $p->id, 'name' => 'Input', 'event_type' => 'input.received', 'mode' => 'capture_only', 'token_hash' => hash('sha256', 'old')]);
+    $this->postJson('/ingest/old', ['order_id' => 1])->assertAccepted()->assertJsonPath('data.delivery_count', 0);
+    expect($s->toArray())->not->toHaveKey('token_hash');
+    $s->update(['token_hash' => hash('sha256', 'new')]);
+    $this->postJson('/ingest/old', ['order_id' => 2])->assertNotFound();
+});

@@ -76,6 +76,118 @@ class WorkspaceController extends Controller
             'timeline' => (clone $deliveries)->selectRaw('CAST(created_at AS DATE) as day, COUNT(*) as total')->groupByRaw('CAST(created_at AS DATE)')->orderBy('day')->get()]];
     }
 
+    public function team(Workspace $workspace)
+    {
+        app(Access::class)->workspace($workspace);
+
+        return ['data' => ['members' => $workspace->members()->with('user')->get(), 'invitations' => Invitation::where('workspace_id', $workspace->id)->whereNull('accepted_at')->where('expires_at', '>', now())->get()]];
+    }
+
+    public function invite(Request $r, Workspace $workspace)
+    {
+        app(Access::class)->workspace($workspace, 'team');
+        $data = $r->validate(['email' => 'required|email|max:255', 'role' => 'required|in:admin,developer,viewer']);
+        $data['email'] = strtolower($data['email']);
+        if ($data['role'] === 'admin') {
+            app(Access::class)->workspace($workspace, 'owner');
+        }
+        $token = Str::random(64);
+        $invitation = DB::transaction(function () use ($workspace, $data, $token) {
+            Workspace::whereKey($workspace->id)->lockForUpdate()->firstOrFail();
+            abort_if(Membership::where('workspace_id', $workspace->id)->whereHas('user', fn ($q) => $q->where('email', $data['email']))->exists(), 422, 'already_a_member');
+            $previous = Invitation::where('workspace_id', $workspace->id)->where('email', $data['email'])->whereNull('accepted_at')->first();
+            if ($previous?->role === 'admin') {
+                app(Access::class)->workspace($workspace, 'owner');
+            }
+            Invitation::where('workspace_id', $workspace->id)->where('email', $data['email'])->whereNull('accepted_at')->delete();
+            $reserved = $workspace->members()->count() + Invitation::where('workspace_id', $workspace->id)->whereNull('accepted_at')->where('expires_at', '>', now())->count();
+            abort_if($reserved >= app(Settings::class)->limit('members', $workspace), 422, 'member_limit_reached');
+
+            return Invitation::create([...$data, 'workspace_id' => $workspace->id, 'token_hash' => hash('sha256', $token), 'expires_at' => now()->addHours(72)]);
+        }, 3);
+        Notification::route('mail', $data['email'])->notify(new WorkspaceInvitation($workspace->name, $token, app(Context::class)->user()->locale));
+
+        return response()->json(['data' => $invitation], 201);
+    }
+
+    public function revokeInvite(Workspace $workspace, Invitation $invitation)
+    {
+        app(Access::class)->workspace($workspace, 'team');
+        abort_unless($invitation->workspace_id === $workspace->id, 404);
+        if ($invitation->role === 'admin') {
+            app(Access::class)->workspace($workspace, 'owner');
+        }
+        $invitation->delete();
+
+        return response()->noContent();
+    }
+
+    public function acceptInvite(Request $r)
+    {
+        $r->validate(['token' => 'required|string|max:100']);
+        $user = app(Context::class)->user();
+        $i = Invitation::where('token_hash', hash('sha256', $r->input('token')))->firstOrFail();
+        $w = DB::transaction(function () use ($i, $user) {
+            $w = Workspace::whereKey($i->workspace_id)->lockForUpdate()->firstOrFail();
+            $i->refresh();
+            abort_if($i->accepted_at || $i->expires_at->isPast() || $w->blocked(), 410, 'invitation_expired');
+            abort_unless(strcasecmp($i->email, $user->email) === 0, 403, 'invitation_email_mismatch');
+            abort_if($w->members()->count() >= app(Settings::class)->limit('members', $w), 422, 'member_limit_reached');
+            Membership::firstOrCreate(['workspace_id' => $w->id, 'user_id' => $user->id], ['role' => $i->role]);
+            $i->update(['accepted_at' => now()]);
+
+            return $w;
+        }, 3);
+        app(Audit::class)->record('invitation.accepted', $i, workspaceId: $w->id);
+
+        return ['data' => $w];
+    }
+
+    public function member(Request $r, Workspace $workspace, Membership $membership)
+    {
+        app(Access::class)->workspace($workspace, 'team');
+        abort_unless($membership->workspace_id === $workspace->id, 404);
+        $data = $r->validate(['role' => 'required|in:admin,developer,viewer']);
+        abort_if($membership->role === 'owner', 422, 'transfer_ownership_first');
+        if ($membership->role === 'admin' || $data['role'] === 'admin') {
+            app(Access::class)->workspace($workspace, 'owner');
+        }
+        $membership->update($data);
+
+        return ['data' => $membership];
+    }
+
+    public function removeMember(Workspace $workspace, Membership $membership)
+    {
+        app(Access::class)->workspace($workspace, 'team');
+        abort_unless($membership->workspace_id === $workspace->id, 404);
+        abort_if($membership->role === 'owner', 422, 'transfer_ownership_first');
+        if ($membership->role === 'admin') {
+            app(Access::class)->workspace($workspace, 'owner');
+        }
+        $membership->delete();
+
+        return response()->noContent();
+    }
+
+    public function leave(Workspace $workspace)
+    {
+        app(Access::class)->workspace($workspace);
+        $u = app(Context::class)->user();
+        abort_if($workspace->owner_user_id === $u->id, 422, 'transfer_ownership_first');
+        Membership::where('workspace_id', $workspace->id)->where('user_id', $u->id)->delete();
+
+        return response()->noContent();
+    }
+
+    public function transfer(Request $r, Workspace $workspace)
+    {
+        app(Access::class)->workspace($workspace, 'owner');
+        $data = $r->validate(['user_id' => 'required|exists:users,id']);
+
+        return ['data' => app(TransferOwnership::class)->execute($workspace, $data['user_id'])];
+    }
+
     public function archive(Workspace $workspace)
     {
         app(Access::class)->workspace($workspace, 'owner');
