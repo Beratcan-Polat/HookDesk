@@ -1,0 +1,9 @@
+**/node_modules
+**/vendor
+**/dist
+.runtime
+frontend/test-results
+frontend/playwright-report
+**/openapi.json
+backend/storage
+backend/bootstrap/cache
