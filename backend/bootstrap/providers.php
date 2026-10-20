@@ -1,3 +1,9 @@
 <?php
 
-return [App\Providers\AppServiceProvider::class];
+use App\Providers\AppServiceProvider;
+use App\Providers\FortifyServiceProvider;
+
+return [
+    AppServiceProvider::class,
+    FortifyServiceProvider::class,
+];
