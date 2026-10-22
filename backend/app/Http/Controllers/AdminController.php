@@ -115,7 +115,7 @@ class AdminController extends Controller
 
     public function workspace(Workspace $workspace)
     {
-        return ['data' => $workspace->load(['members.user', 'projects', 'owner']), 'limits' => WorkspaceLimitOverride::where('workspace_id', $workspace->id)->get(), 'invitations' => Invitation::where('workspace_id', $workspace->id)->whereNull('accepted_at')->get()];
+        return ['data' => $workspace->load(['members.user', 'projects', 'owner']), ...app(Settings::class)->workspaceLimits($workspace), 'invitations' => Invitation::where('workspace_id', $workspace->id)->whereNull('accepted_at')->get()];
     }
 
     public function workspaceAction(Request $r, Workspace $workspace)
@@ -136,11 +136,30 @@ class AdminController extends Controller
 
     public function limit(Request $r, Workspace $workspace)
     {
-        $data = $r->validate(['key' => 'required|in:'.implode(',', array_keys(config('hookdesk.limits'))), 'value' => 'required|integer|min:1|max:1000000']);
-        $entry = WorkspaceLimitOverride::updateOrCreate(['workspace_id' => $workspace->id, 'key' => $data['key']], ['value' => $data['value']]);
-        app(Audit::class)->record('admin.limit_updated', $workspace, $data, $r->input('reason'), $workspace->id);
+        $data = $r->validate(['key' => 'required|in:'.implode(',', app(Settings::class)->workspaceLimitKeys()), 'value' => 'required|integer|min:1|max:1000000']);
+        $entry = DB::transaction(function () use ($workspace, $data, $r) {
+            Workspace::whereKey($workspace->id)->lockForUpdate()->firstOrFail();
+            $entry = WorkspaceLimitOverride::updateOrCreate(['workspace_id' => $workspace->id, 'key' => $data['key']], ['value' => $data['value']]);
+            app(Audit::class)->record('admin.limit_updated', $workspace, $data, $r->input('reason'), $workspace->id);
+
+            return $entry;
+        });
 
         return ['data' => $entry];
+    }
+
+    public function resetLimit(Request $r, Workspace $workspace, string $key)
+    {
+        abort_unless(in_array($key, app(Settings::class)->workspaceLimitKeys(), true), 422, 'unknown_workspace_limit');
+        DB::transaction(function () use ($workspace, $key, $r) {
+            Workspace::whereKey($workspace->id)->lockForUpdate()->firstOrFail();
+            $override = WorkspaceLimitOverride::where('workspace_id', $workspace->id)->where('key', $key)->first();
+            $previous = $override?->value;
+            $override?->delete();
+            app(Audit::class)->record('admin.limit_reset', $workspace, ['key' => $key, 'before' => $previous, 'after' => app(Settings::class)->limit($key, $workspace)], $r->input('reason'), $workspace->id);
+        });
+
+        return response()->noContent();
     }
 
     public function projects(Request $r)

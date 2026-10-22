@@ -5375,6 +5375,80 @@
                 }
             }
         },
+        "/api/admin/v1/workspaces/{workspace}/limits/{key}": {
+            "delete": {
+                "operationId": "delete_api_admin_v1_workspaces_workspace_limits_key",
+                "summary": "resetLimit",
+                "tags": [
+                    "Administration"
+                ],
+                "security": [
+                    {
+                        "sessionCookie": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation; data is wrapped in a data field unless otherwise documented."
+                    },
+                    "401": {
+                        "description": "Authentication required"
+                    },
+                    "403": {
+                        "description": "Permission, verification or account state denied"
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    },
+                    "422": {
+                        "description": "Validation failed"
+                    },
+                    "429": {
+                        "description": "Rate or daily quota exceeded"
+                    },
+                    "201": {
+                        "description": "Resource created. Credentials are only returned once where applicable."
+                    },
+                    "202": {
+                        "description": "Event persisted or replay accepted. Delivery is asynchronous."
+                    },
+                    "204": {
+                        "description": "Operation completed without a response body."
+                    },
+                    "423": {
+                        "description": "Password and TOTP step-up required within five minutes."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "key",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Reason"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/v1/projects": {
             "get": {
                 "operationId": "get_api_admin_v1_projects",

@@ -76,6 +76,7 @@ Route::middleware(['auth:sanctum', 'super_admin'])->prefix('admin/v1')->name('ad
         Route::get('workspaces/{workspace}', [AdminController::class, 'workspace']);
         Route::post('workspaces/{workspace}/actions', [AdminController::class, 'workspaceAction'])->name('workspace.action');
         Route::put('workspaces/{workspace}/limits', [AdminController::class, 'limit'])->name('workspace.limit');
+        Route::delete('workspaces/{workspace}/limits/{key}', [AdminController::class, 'resetLimit'])->name('workspace.limit.reset');
         Route::get('projects', [AdminController::class, 'projects']);
         Route::get('projects/{project}', [AdminController::class, 'project']);
         Route::patch('workspaces/{workspace}/members/{membership}', [AdminController::class, 'member'])->name('member.update');
