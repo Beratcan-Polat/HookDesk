@@ -23,3 +23,21 @@ it('does not expose source hashes and closes rotated source addresses', function
     $s->update(['token_hash' => hash('sha256', 'new')]);
     $this->postJson('/ingest/old', ['order_id' => 2])->assertNotFound();
 });
+
+it('keeps event reads independent from the project acceptance rate limit', function () {
+    config(['hookdesk.limits.ingest_per_minute' => 2]);
+    [$u, $w, $p] = hookdeskFixture();
+    $token = 'read-and-write-key';
+    ProjectApiKey::create(['project_id' => $p->id, 'created_by' => $u->id, 'name' => 'Test', 'prefix' => 'read', 'token_hash' => hash('sha256', $token), 'abilities' => ['events:write', 'events:read'], 'expires_at' => now()->addDay()]);
+    $payload = ['type' => 'order.created', 'data' => (object) ['order_id' => 1]];
+    $eventId = $this->withToken($token)->postJson('/api/v1/events', $payload)->assertAccepted()->json('data.id');
+
+    for ($i = 0; $i < 3; $i++) {
+        $this->getJson('/api/v1/events/'.$eventId)->assertOk();
+        $this->getJson('/api/v1/events/'.$eventId.'/deliveries')->assertOk();
+    }
+
+    $this->postJson('/api/v1/events', $payload)->assertAccepted();
+    $this->postJson('/api/v1/events', $payload)->assertTooManyRequests()->assertHeader('Retry-After');
+    $this->getJson('/api/v1/events/'.$eventId.'/deliveries')->assertOk();
+});
