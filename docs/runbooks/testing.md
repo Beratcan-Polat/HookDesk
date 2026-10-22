@@ -39,7 +39,7 @@ npm run build
 
 ## Browser journeys
 
-Start the API, receiver, worker, scheduler and frontend against a development or browser-test database. Set `E2E_EMAIL` and `E2E_PASSWORD` for a verified test account. `hookdesk:demo` creates the sample user and workspace used by the test fixtures.
+Start the API, receiver, worker, scheduler and frontend against a dedicated browser-test database. Set `E2E_EMAIL` and `E2E_PASSWORD` for a verified test account. `hookdesk:demo` creates the sample user and workspace used by the test fixtures.
 
 Create the administrator fixture from `backend`:
 
@@ -49,6 +49,8 @@ php tests/Support/seed-browser.php
 
 Save its JSON output to a Git-ignored file and set `E2E_ADMIN_FILE` to that file's absolute path. The output contains generated credentials and a TOTP secret. The fixture helper is disabled in production.
 
+The helper refreshes the test administrator's credentials and creates separate English and Turkish workspaces, verified/unverified members and synthetic terminal deliveries for panel tests. These workspaces are used for real ownership transfers and limit changes; keep this data in the browser-test database.
+
 From `frontend`:
 
 ```sh
@@ -56,7 +58,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-The journeys cover public navigation, English/Turkish text, mobile layout, login errors, password recovery, event publishing, administrator TOTP, step-up and writable support sessions. The administrator test waits for a new authenticator interval because Fortify rejects TOTP reuse.
+The six journeys cover public navigation, English/Turkish text, mobile layout, login errors, password recovery, event publishing, administrator TOTP, step-up and writable support sessions. The English and Turkish panel journeys also exercise bulk replay, limit overrides, restoration of inherited defaults and ownership transfer to a verified member. Administrator helpers wait for fresh authenticator intervals because Fortify rejects TOTP reuse.
 
 Screenshots and failure traces are written to the ignored `test-results` and `playwright-report` directories.
 

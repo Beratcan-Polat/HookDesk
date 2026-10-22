@@ -34,6 +34,12 @@ I started the complete development stack with PHP 8.4, PostgreSQL 18, Redis 8, C
 
 The [smoke script](../infra/scripts/smoke.mjs) reproduces these HTTP checks. The container CI job also runs it with `--recovery`, including a separate backend environment file to check that the receiver retains Docker configuration.
 
+## Panel checks — 22 October 2026
+
+- **Backend:** 56 tests passed with 179 assertions against the isolated PostgreSQL test database, including Redis and concurrency checks. Added cases cover mixed bulk-replay outcomes, the 100-record boundary, limit inheritance/reset authorization and ownership candidates whose status changes.
+- **Frontend:** 15 Vitest tests passed. New cases cover English/Turkish replay results, selection across pages, the 100-record cap, typed limit input and verified ownership candidates.
+- **Browser coverage:** the suite now includes two additional English/Turkish panel journeys against generated, isolated fixtures. Current run results remain available in GitHub Actions.
+
 ## Release checks
 
 Production validation includes live email delivery, HTTPS, host egress rules, worker recovery, off-site backups, restore tests and monitoring. These checks are tracked in the [release checklist](runbooks/smoke-check.md) and [deployment guide](runbooks/deployment.md).

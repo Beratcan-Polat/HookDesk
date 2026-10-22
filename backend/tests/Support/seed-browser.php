@@ -18,4 +18,5 @@ $admin = User::firstOrCreate(['email' => 'admin-browser@hookdesk.test'], ['name'
 $admin->forceFill(['password' => $password, 'platform_role' => 'super_admin', 'status' => 'active', 'email_verified_at' => now(), 'two_factor_secret' => encrypt($secret), 'two_factor_confirmed_at' => now()])->save();
 $owner = User::where('email', 'developer@hookdesk.test')->firstOrFail();
 $workspace = Workspace::where('owner_user_id', $owner->id)->firstOrFail();
-echo json_encode(['email' => $admin->email, 'password' => $password, 'secret' => $secret, 'user_id' => $owner->id, 'workspace_id' => $workspace->id], JSON_THROW_ON_ERROR);
+require_once __DIR__.'/seed-operations.php';
+echo json_encode(['email' => $admin->email, 'password' => $password, 'secret' => $secret, 'user_id' => $owner->id, 'workspace_id' => $workspace->id, 'operations' => seedBrowserOperations($owner)], JSON_THROW_ON_ERROR);
