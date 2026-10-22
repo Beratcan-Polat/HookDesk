@@ -76,7 +76,7 @@ for (const locale of ['en', 'tr'] as const) {
       .getByLabel(labels.reason, { exact: true })
       .fill('Browser limit override verification')
     await dialog.getByRole('button', { name: labels.proceed, exact: true }).click()
-    await expect(page.getByRole('dialog')).toHaveCount(1)
+    await expect(page.getByRole('dialog', { includeHidden: true })).toHaveCount(1)
     await expect(limit.getByText(labels.custom, { exact: true })).toBeVisible()
     await expect(limit.getByText('123', { exact: true })).toBeVisible()
     await limit.getByRole('button', { name: labels.reset, exact: true }).click()
@@ -85,7 +85,7 @@ for (const locale of ['en', 'tr'] as const) {
       .getByLabel(labels.reason, { exact: true })
       .fill('Browser restore inheritance verification')
     await dialog.getByRole('button', { name: labels.proceed, exact: true }).click()
-    await expect(page.getByRole('dialog')).toHaveCount(1)
+    await expect(page.getByRole('dialog', { includeHidden: true })).toHaveCount(1)
     await expect(limit.getByText(labels.inherited, { exact: true })).toBeVisible()
     await expect(limit.getByRole('button', { name: labels.reset, exact: true })).toHaveCount(0)
 
@@ -101,7 +101,7 @@ for (const locale of ['en', 'tr'] as const) {
       .getByLabel(labels.reason, { exact: true })
       .fill('Browser ownership transfer verification')
     await dialog.getByRole('button', { name: labels.transfer, exact: true }).click()
-    await expect(page.getByRole('dialog')).toHaveCount(1)
+    await expect(page.getByRole('dialog', { includeHidden: true })).toHaveCount(1)
     const response = await page.request.get('/api/admin/v1/workspaces/' + fixture.workspace_id, {
       headers: { Accept: 'application/json', Referer: page.url() },
     })
