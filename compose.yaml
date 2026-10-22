@@ -1,5 +1,6 @@
 name: hookdesk
 x-app: &app
+  image: hookdesk-dev:local
   build:
     context: .
     dockerfile: infra/docker/backend.Dockerfile
@@ -7,6 +8,8 @@ x-app: &app
   env_file: .env
   volumes:
     - ./backend:/srv/backend
+    - backend_vendor:/srv/backend/vendor
+    - backend_cache:/srv/backend/bootstrap/cache
   depends_on:
     postgres:
       condition: service_healthy
@@ -50,7 +53,7 @@ services:
     <<: *app
     environment:
       APP_ROLE: receiver
-    command: php artisan serve --host=0.0.0.0 --port=8080
+    command: php artisan serve --host=0.0.0.0 --port=8080 --no-reload
     networks: [backend]
   frontend-dev:
     image: node:24-alpine
@@ -61,6 +64,18 @@ services:
     command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
     environment:
       API_PROXY_TARGET: http://gateway
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:5173/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      start_period: 5m
+      retries: 12
     networks: [backend, outbound]
   gateway:
     image: caddy:2-alpine
@@ -68,12 +83,21 @@ services:
     volumes:
       - ./infra/caddy/development.Caddyfile:/etc/caddy/Caddyfile:ro
       - ./backend/public:/srv/backend/public:ro
-    depends_on: [app, frontend-dev]
+    depends_on:
+      app:
+        condition: service_started
+      frontend-dev:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1/api/ready']
+      interval: 5s
+      timeout: 3s
+      retries: 20
     networks: [backend, outbound]
   mailpit:
     image: axllent/mailpit:v1.27
     ports: ['127.0.0.1:8025:8025']
-    networks: [backend]
+    networks: [backend, outbound]
 networks:
   backend:
     internal: true
@@ -81,4 +105,6 @@ networks:
 volumes:
   postgres_data: {}
   redis_data: {}
+  backend_vendor: {}
+  backend_cache: {}
   frontend_modules: {}
