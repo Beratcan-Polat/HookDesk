@@ -59,7 +59,7 @@ From a fresh clone:
 cp .env.example .env
 docker compose build app
 docker compose run --rm --user root app composer install --no-interaction
-docker compose run --rm --user root app sh -c 'chown -R www-data:www-data storage bootstrap/cache'
+docker compose run --rm --user root app sh -c 'chown -R www-data:www-data vendor storage bootstrap/cache'
 docker compose run --rm app php artisan key:generate --show
 ```
 
@@ -72,6 +72,14 @@ docker compose exec app php artisan migrate --force
 
 - Application: [localhost:8080](http://localhost:8080)
 - Development email: [localhost:8025](http://localhost:8025)
+
+To check the running Docker stack end to end with Node.js 24:
+
+```sh
+node infra/scripts/smoke.mjs
+```
+
+This exercises registration, email verification, API keys, signed delivery and retries against the actual services. I documented setup, restarts and the recovery check in the [Docker development guide](docs/runbooks/docker-development.md).
 
 I also documented [development without Docker](docs/runbooks/native-development.md).
 

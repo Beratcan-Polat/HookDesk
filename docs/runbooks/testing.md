@@ -60,6 +60,16 @@ The journeys cover public navigation, English/Turkish text, mobile layout, login
 
 Screenshots and failure traces are written to the ignored `test-results` and `playwright-report` directories.
 
+## Docker smoke test
+
+After starting the development stack, run from the repository root with Node.js 24:
+
+```sh
+node infra/scripts/smoke.mjs
+```
+
+This verifies SMTP through Mailpit, signed email verification, cookie/CSRF authentication, API keys, idempotency, actual webhook retries, receiver deduplication and incoming sources. `--recovery` also stops the worker and restarts Redis before verifying a queued delivery. Run that mode on a dedicated development stack. See the [Docker development guide](docker-development.md) for setup, cleanup and diagnostics.
+
 ## CI
 
-[GitHub Actions](../../.github/workflows/ci.yml) runs backend checks with PostgreSQL and Redis, frontend checks, container builds and browser journeys. Run results are available in the repository's [Actions tab](https://github.com/Beratcan-Polat/HookDesk/actions).
+[GitHub Actions](../../.github/workflows/ci.yml) runs backend checks with PostgreSQL and Redis, frontend checks, container builds, the complete Docker smoke/recovery flow and browser journeys. Run results are available in the repository's [Actions tab](https://github.com/Beratcan-Polat/HookDesk/actions).

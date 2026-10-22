@@ -16,9 +16,23 @@ I use unit, integration and browser tests to check event delivery and authorizat
 
 ## CI
 
-In the [initial CI run](https://github.com/Beratcan-Polat/HookDesk/actions/runs/39452794206), the backend, frontend and container-build jobs passed. The browser job stopped during service-container initialization, before its test steps ran.
+All four jobs passed in the [22 October CI run](https://github.com/Beratcan-Polat/HookDesk/actions/runs/39741115210): backend, frontend, container builds and browser journeys. This followed a fix to service health-check argument quoting, which had stopped the browser job during initialization in the initial run.
 
 Current results are available in [GitHub Actions](https://github.com/Beratcan-Polat/HookDesk/actions). Commands and environment setup are documented in the [testing guide](runbooks/testing.md).
+
+## Docker validation — 22 October 2026
+
+I started the complete development stack with PHP 8.4, PostgreSQL 18, Redis 8, Caddy, the frontend and Mailpit. A repeated setup preserved the root environment file and application key.
+
+- **Backend:** 51 tests passed with 149 assertions against a dedicated PostgreSQL database, including the real Redis queue test. Larastan and formatting checks passed.
+- **Acceptance limits:** event and delivery reads remain available after the project's acceptance limit is exhausted and do not consume that limit.
+- **Registration:** a unique account registered through Caddy, received its SMTP email in Mailpit and completed signed email verification with its CSRF-protected session.
+- **Delivery:** an API event reached the internal HMAC-verifying receiver with actual `500`, `500`, then `200` responses at the configured retry intervals.
+- **Idempotency:** the duplicate request returned the original event without increasing event usage; a conflicting body returned `409`.
+- **Replay and sources:** replay retained the event identity and the receiver reported a duplicate. Capture-only and forwarding sources both passed.
+- **Recovery:** an event accepted while the worker was stopped was delivered after restarting Redis and starting the worker again.
+
+The [smoke script](../infra/scripts/smoke.mjs) reproduces these HTTP checks. The container CI job also runs it with `--recovery`, including a separate backend environment file to check that the receiver retains Docker configuration.
 
 ## Release checks
 

@@ -66,10 +66,29 @@ jobs:
       - run: npm run build
   containers:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - run: cp .env.example .env && docker compose config --quiet && docker compose -f compose.production.yaml config --quiet
       - run: docker compose build app && docker compose -f compose.production.yaml build gateway
+      - name: Start the complete development stack
+        shell: pwsh
+        run: |
+          Copy-Item backend/.env.example backend/.env
+          ./infra/scripts/setup.ps1
+      - name: Verify SMTP, sessions and signed delivery through the gateway
+        run: node infra/scripts/smoke.mjs --recovery
+      - name: Container diagnostics
+        if: failure()
+        run: |
+          docker compose ps --all
+          docker compose logs --no-color --tail 100 app worker scheduler receiver gateway frontend-dev
+      - name: Stop the isolated CI stack
+        if: always()
+        run: docker compose down --volumes --remove-orphans
   browser:
     runs-on: ubuntu-latest
     services:

@@ -59,7 +59,7 @@ Yeni bir klonda:
 cp .env.example .env
 docker compose build app
 docker compose run --rm --user root app composer install --no-interaction
-docker compose run --rm --user root app sh -c 'chown -R www-data:www-data storage bootstrap/cache'
+docker compose run --rm --user root app sh -c 'chown -R www-data:www-data vendor storage bootstrap/cache'
 docker compose run --rm app php artisan key:generate --show
 ```
 
@@ -72,6 +72,14 @@ docker compose exec app php artisan migrate --force
 
 - Uygulama: [localhost:8080](http://localhost:8080)
 - Geliştirme e-postaları: [localhost:8025](http://localhost:8025)
+
+Çalışan Docker ortamını Node.js 24 ile uçtan uca kontrol etmek için:
+
+```sh
+node infra/scripts/smoke.mjs
+```
+
+Bu kontrol kayıt, e-posta doğrulama, API anahtarı, imzalı teslimat ve yeniden deneme akışını gerçek servislerle çalıştırır. Kurulum, servisleri yeniden başlatma ve kesinti testi için [Docker geliştirme rehberini](docs/runbooks/docker-development.md) ekledim.
 
 Docker kullanmadan geliştirme için [yerel kurulum rehberini](docs/runbooks/native-development.md) hazırladım.
 
