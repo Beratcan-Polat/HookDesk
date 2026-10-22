@@ -80,11 +80,11 @@ jobs:
           POSTGRES_USER: hookdesk
           POSTGRES_PASSWORD: ci_test_password
         ports: ['5432:5432']
-        options: --health-cmd 'pg_isready -U hookdesk' --health-interval 5s --health-timeout 3s --health-retries 20
+        options: --health-cmd "pg_isready -U hookdesk" --health-interval 5s --health-timeout 3s --health-retries 20
       redis:
         image: redis:8-alpine
         ports: ['6379:6379']
-        options: --health-cmd 'redis-cli ping' --health-interval 5s --health-timeout 3s --health-retries 20
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
     env:
       APP_ENV: testing
       APP_KEY: base64:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
