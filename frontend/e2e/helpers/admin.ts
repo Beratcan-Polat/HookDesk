@@ -12,7 +12,6 @@ export interface OperationsFixture {
   failed_ids: string[]
   succeeded_id: string
 }
-let lastUsedCode = ''
 export function readAdminFixture() {
   return JSON.parse(readFileSync(process.env.E2E_ADMIN_FILE!, 'utf8').replace(/^\uFEFF/, '')) as {
     email: string
@@ -43,7 +42,8 @@ export async function signInAndStepUp(page: Page) {
   await page.getByLabel('Password', { exact: true }).fill(account.password)
   await page.getByRole('button', { name: 'Sign in', exact: true }).click()
   await expect(page.getByLabel('Authentication code')).toBeVisible()
-  await expect.poll(() => totp(account.secret), { timeout: 35000 }).not.toBe(lastUsedCode)
+  const previousCode = totp(account.secret)
+  await expect.poll(() => totp(account.secret), { timeout: 35000 }).not.toBe(previousCode)
   const loginCode = totp(account.secret)
   await page.getByLabel('Authentication code').fill(loginCode)
   await page.getByRole('button', { name: 'Continue', exact: true }).click()
@@ -56,6 +56,5 @@ export async function signInAndStepUp(page: Page) {
   await dialog.getByLabel('Authentication code').fill(totp(account.secret))
   await dialog.getByRole('button', { name: 'Continue', exact: true }).click()
   await expect(dialog).toHaveCount(0)
-  lastUsedCode = totp(account.secret)
   return account
 }

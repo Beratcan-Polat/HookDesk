@@ -102,8 +102,10 @@ for (const locale of ['en', 'tr'] as const) {
       .fill('Browser ownership transfer verification')
     await dialog.getByRole('button', { name: labels.transfer, exact: true }).click()
     await expect(page.getByRole('dialog')).toHaveCount(1)
-    const response = await page.request.get('/api/admin/v1/workspaces/' + fixture.workspace_id)
-    expect(response.ok()).toBeTruthy()
+    const response = await page.request.get('/api/admin/v1/workspaces/' + fixture.workspace_id, {
+      headers: { Accept: 'application/json', Referer: page.url() },
+    })
+    expect(response.status()).toBe(200)
     const result = await response.json()
     expect(result.data.owner_user_id).toBe(fixture.target_id)
     expect(
