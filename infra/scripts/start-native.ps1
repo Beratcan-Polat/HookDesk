@@ -4,7 +4,13 @@ $taskRuntime = Join-Path $taskRoot '.runtime'
 New-Item -ItemType Directory -Path $taskRuntime -Force | Out-Null
 if (-not (Test-Path -LiteralPath (Join-Path $taskRoot 'backend\.env'))) { throw 'Configure backend/.env first. See docs/runbooks/native-development.md.' }
 $taskIni = Join-Path $taskRuntime 'php-conf'
-if (Test-Path -LiteralPath (Join-Path $taskIni 'pgsql.ini')) { $env:PHP_INI_SCAN_DIR = $taskIni }
+$taskPhp = (Get-Command php -ErrorAction Stop).Source
+& $taskPhp -r 'exit(extension_loaded("pdo_pgsql") ? 0 : 1);'
+if ($LASTEXITCODE -ne 0) {
+    if (Test-Path -LiteralPath (Join-Path $taskIni 'pgsql.ini')) { $env:PHP_INI_SCAN_DIR = $taskIni }
+    & $taskPhp -r 'exit(extension_loaded("pdo_pgsql") ? 0 : 1);'
+    if ($LASTEXITCODE -ne 0) { throw 'Enable extension=pdo_pgsql in the PHP configuration shown by php --ini.' }
+}
 function Test-TaskPort([int]$Port) {
     $client = [System.Net.Sockets.TcpClient]::new()
     try { $pending = $client.ConnectAsync('127.0.0.1', $Port); return ($pending.Wait(300) -and $client.Connected) }
@@ -14,7 +20,8 @@ $taskPgCtl = Join-Path $taskRuntime 'postgresql\pgsql\bin\pg_ctl.exe'
 $taskPgData = Join-Path $taskRuntime 'pgdata'
 if ((Test-Path -LiteralPath $taskPgCtl) -and (Test-Path -LiteralPath $taskPgData) -and -not (Test-TaskPort 55432)) {
     $taskArguments = @('-D', ('"' + $taskPgData + '"'), '-l', ('"' + (Join-Path $taskRuntime 'postgres.log') + '"'), '-o', '"-h 127.0.0.1 -p 55432"', '-w', 'start')
-    $taskPgProcess = Start-Process -FilePath $taskPgCtl -ArgumentList $taskArguments -WindowStyle Hidden -PassThru -Wait
+    $taskPgProcess = Start-Process -FilePath $taskPgCtl -ArgumentList $taskArguments -WindowStyle Hidden -PassThru
+    if (-not $taskPgProcess.WaitForExit(30000)) { throw 'Local PostgreSQL startup timed out. Inspect .runtime/postgres.log.' }
     if ($taskPgProcess.ExitCode -ne 0) { throw 'Local PostgreSQL startup failed.' }
 }
 $taskPidFile = Join-Path $taskRuntime 'native-processes.json'
@@ -35,12 +42,11 @@ function Start-TaskService([string]$Name,[string]$Executable,[string[]]$Argument
         $script:taskRecords += [pscustomobject]@{name=$Name;id=$process.Id;started=$process.StartTime.ToUniversalTime().ToString('o');path=$process.Path}
     } finally { $env:APP_ROLE = $previousRole }
 }
-$taskPhp = (Get-Command php -ErrorAction Stop).Source
 $taskNode = (Get-Command node -ErrorAction Stop).Source
 $taskBackend = Join-Path $taskRoot 'backend'
 Start-TaskService 'api' $taskPhp @('-S','127.0.0.1:8000','-t','public') $taskBackend 8000
 Start-TaskService 'receiver' $taskPhp @('-S','127.0.0.1:8001','-t','public') $taskBackend 8001 'receiver'
-Start-TaskService 'worker' $taskPhp @('artisan','queue:work','--queue=deliveries,default','--sleep=1','--tries=1') $taskBackend
+Start-TaskService 'worker' $taskPhp @('artisan','queue:work','--queue=deliveries,default','--timeout=20','--sleep=1','--tries=1') $taskBackend
 Start-TaskService 'scheduler' $taskPhp @('artisan','schedule:work') $taskBackend
 Start-TaskService 'frontend' $taskNode @('node_modules/vite/bin/vite.js','--host','127.0.0.1') (Join-Path $taskRoot 'frontend') 5173
 $taskRecords | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath $taskPidFile

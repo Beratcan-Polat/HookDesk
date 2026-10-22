@@ -80,6 +80,25 @@ Once database connections and PHP extensions are configured, application process
 
 The start script leaves existing listeners running and records the processes it starts. The stop script stops only those recorded processes.
 
+## PostgreSQL driver errors
+
+If Laravel reports `could not find driver (Connection: pgsql)`, check the PHP executable and configuration used by the terminal:
+
+```sh
+php --ini
+php -r "print_r(PDO::getAvailableDrivers());"
+```
+
+The driver list must include `pgsql`. On Windows, enable this line in the loaded `php.ini`, with `extension_dir` pointing to the PHP installation's `ext` directory:
+
+```ini
+extension=pdo_pgsql
+```
+
+Restart `php artisan serve` after changing PHP extensions. PostgreSQL must also be running at the host and port configured in `backend/.env`; enabling a driver does not start the database server.
+
+For manual startup, `php artisan serve` runs the backend on port 8000 and `npm run dev` runs the frontend on port 5173. Open [localhost:5173](http://localhost:5173) for the application. Port 8000 serves the API; its root returns service metadata.
+
 ## Email and sample data
 
 Set SMTP values for a development mail server, or use `MAIL_MAILER=log` to read verification and reset links in the Laravel log. With Docker, Mailpit provides the email interface.
