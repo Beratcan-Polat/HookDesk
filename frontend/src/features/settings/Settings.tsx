@@ -6,8 +6,9 @@ import { api, errorMessage } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PageHeading, MutationDialog, Failure, CopyText, useNotice } from '@/components/common'
+import OwnershipTransfer from '@/features/workspaces/OwnershipTransfer'
 export default function SettingsPage() {
-  const { user, workspace, prefix } = useScope()
+  const { user, workspace, prefix, supportId } = useScope()
   const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const notice = useNotice()
@@ -179,11 +180,9 @@ export default function SettingsPage() {
               method="patch"
               fields={[{ name: 'name', label: 'name', value: workspace.name, required: true }]}
             />
-            <MutationDialog
-              label="transfer"
-              url={prefix + '/workspaces/' + workspace.id + '/transfer'}
-              fields={[{ name: 'user_id', label: 'userId', required: true }]}
-            />
+            {!supportId ? (
+              <OwnershipTransfer workspaceId={workspace.id} ownerId={workspace.owner_user_id} />
+            ) : null}
             <MutationDialog
               label="archive"
               url={prefix + '/workspaces/' + workspace.id + '/archive'}

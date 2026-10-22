@@ -1,6 +1,135 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 const phrases: Record<string, [string, string]> = {
+  ownershipTransferDescription: [
+    'Choose an active, verified member. The previous owner will become a workspace Admin.',
+    'Etkin ve e-postası doğrulanmış bir üye seç. Önceki sahip çalışma alanı yöneticisi olacak.',
+  ],
+  newOwner: ['New owner', 'Yeni sahip'],
+  selectMember: ['Select a workspace member', 'Bir çalışma alanı üyesi seç'],
+  noEligibleOwners: ['No eligible members', 'Uygun üye bulunamadı'],
+  noEligibleOwnersDescription: [
+    'Invite a member and wait for email verification before transferring ownership.',
+    'Sahipliği aktarmadan önce bir üye davet et ve e-posta doğrulamasının tamamlanmasını bekle.',
+  ],
+  ownershipTransferConfirm: [
+    'Ownership will be transferred to {{name}}.',
+    'Sahiplik {{name}} kullanıcısına aktarılacak.',
+  ],
+  owner_must_be_verified: [
+    'The new owner must be active and have a verified email address.',
+    'Yeni sahip etkin olmalı ve e-posta adresi doğrulanmış olmalı.',
+  ],
+  workspaceLimits: ['Workspace limits', 'Çalışma alanı limitleri'],
+  defaultLimits: ['Default limits', 'Varsayılan limitler'],
+  workspaceLimitsDescription: [
+    'Effective limits include this workspace’s overrides. Unchanged limits follow the platform defaults.',
+    'Etkin limitler bu çalışma alanına özel değerleri içerir. Değiştirilmeyen limitler platform varsayılanlarını izler.',
+  ],
+  platformDefault: ['Platform default: {{value}}', 'Platform varsayılanı: {{value}}'],
+  customLimit: ['Workspace override', 'Özel limit'],
+  inheritedLimit: ['Platform default', 'Varsayılan'],
+  resetLimit: ['Use platform default', 'Varsayılana dön'],
+  resetLimitDescription: [
+    'Remove this workspace override. The current platform default will apply, including future default changes.',
+    'Bu çalışma alanına özel değeri kaldır. Güncel platform varsayılanı ve sonraki varsayılan değişiklikleri uygulanacak.',
+  ],
+  wholeNumberRange: [
+    'Enter a whole number between {{min}} and {{max}}.',
+    '{{min}} ile {{max}} arasında bir tam sayı gir.',
+  ],
+  unknown_workspace_limit: [
+    'This limit cannot be configured per workspace.',
+    'Bu limit çalışma alanına özel ayarlanamaz.',
+  ],
+  limit_owned_workspaces: [
+    'Owned workspaces per user',
+    'Kullanıcı başına sahip olunan çalışma alanı',
+  ],
+  limit_members: ['Members', 'Üyeler'],
+  limit_projects: ['Projects', 'Projeler'],
+  limit_endpoints: ['Endpoints per project', 'Proje başına hedef'],
+  limit_sources: ['Sources per project', 'Proje başına kaynak'],
+  limit_api_keys: ['Active API keys per project', 'Proje başına etkin API anahtarı'],
+  limit_events_daily: ['New events per day', 'Günlük yeni olay'],
+  limit_replays_daily: ['Manual replays per day', 'Günlük elle yeniden gönderim'],
+  limit_ingest_per_minute: ['Acceptance requests per minute', 'Dakikalık kabul isteği'],
+  limit_workspace_per_second: ['Delivery attempts per second', 'Saniyelik teslimat denemesi'],
+  limit_endpoint_per_second: ['Attempts per endpoint per second', 'Hedef başına saniyelik deneme'],
+  limitHelp_members: [
+    'Maximum members, including reserved invitations.',
+    'Davetler için ayrılan yerler dahil en fazla üye sayısı.',
+  ],
+  limitHelp_projects: [
+    'Maximum active projects in this workspace.',
+    'Bu çalışma alanındaki en fazla etkin proje sayısı.',
+  ],
+  limitHelp_endpoints: [
+    'Maximum destinations in each project.',
+    'Her projedeki en fazla webhook hedefi sayısı.',
+  ],
+  limitHelp_sources: [
+    'Maximum incoming webhook sources in each project.',
+    'Her projedeki en fazla gelen webhook kaynağı sayısı.',
+  ],
+  limitHelp_api_keys: [
+    'Maximum unexpired, active keys in each project.',
+    'Her projedeki süresi dolmamış etkin anahtar sayısı.',
+  ],
+  limitHelp_events_daily: [
+    'New events accepted per workspace per UTC day.',
+    'UTC gününe göre çalışma alanında kabul edilen yeni olay sayısı.',
+  ],
+  limitHelp_replays_daily: [
+    'Manual replays created per workspace per UTC day.',
+    'UTC gününe göre çalışma alanında oluşturulan elle yeniden gönderimler.',
+  ],
+  limitHelp_ingest_per_minute: [
+    'Shared acceptance rate per project for API requests and incoming sources.',
+    'API ve gelen kaynakların proje başına ortak kabul hızı.',
+  ],
+  limitHelp_workspace_per_second: [
+    'Combined attempt rate across this workspace.',
+    'Çalışma alanındaki hedeflerin toplam teslimat deneme hızı.',
+  ],
+  limitHelp_endpoint_per_second: [
+    'Maximum attempt rate for each destination.',
+    'Her hedef için en fazla teslimat deneme hızı.',
+  ],
+  bulkReplay: ['Replay selected deliveries', 'Seçilen teslimatları yeniden gönder'],
+  bulkReplayDescription: [
+    'Create new deliveries for up to 100 failed records. Status and permissions are checked again before each replay.',
+    'En fazla 100 başarısız kayıt için yeni teslimatlar oluşturulur. Her kaydın durumu ve yetkileri işlem sırasında yeniden kontrol edilir.',
+  ],
+  bulkReplaySummary: [
+    '{{succeeded}} replays created · {{failed}} records rejected',
+    '{{succeeded}} yeni teslimat oluşturuldu · {{failed}} kayıt reddedildi',
+  ],
+  bulkReplayRemaining: [
+    'Rejected records remain selected. Review the reason before trying again.',
+    'Reddedilen kayıtlar seçili kalır. Tekrar denemeden önce hata nedenini kontrol et.',
+  ],
+  selectedDeliveries: ['Selected deliveries: {{count}} / 100', 'Seçilen teslimat: {{count}} / 100'],
+  bulkReplayLimit: [
+    'Select failed records across pages, up to 100. Changing filters clears the selection.',
+    'Sayfalar arasında en fazla 100 başarısız kayıt seçebilirsin. Filtre değişince seçim temizlenir.',
+  ],
+  clearSelection: ['Clear selection', 'Seçimi temizle'],
+  selectFailedPage: [
+    'Select failed deliveries on this page',
+    'Bu sayfadaki başarısız teslimatları seç',
+  ],
+  selectDelivery: ['Select delivery {{id}}', '{{id}} teslimatını seç'],
+  replayCreated: ['New delivery created', 'Yeni teslimat oluşturuldu'],
+  only_failed_deliveries: [
+    'Only failed deliveries can be replayed here.',
+    'Buradan yalnızca başarısız teslimatlar yeniden gönderilebilir.',
+  ],
+  not_found: ['The record no longer exists.', 'Kayıt artık mevcut değil.'],
+  target_blocked: [
+    'The project or destination is blocked or paused.',
+    'Proje ya da hedef engellenmiş veya duraklatılmış.',
+  ],
   confirmOperation: [
     'Review the details before continuing.',
     'Devam etmeden önce bilgileri kontrol et.',

@@ -26,6 +26,11 @@ export interface Workspace {
   suspended: boolean
   archived_at: string | null
 }
+export interface WorkspaceMember {
+  id: string
+  role: 'owner' | 'admin' | 'developer' | 'viewer'
+  user: Pick<User, 'id' | 'name' | 'email' | 'status' | 'email_verified_at'>
+}
 export interface Endpoint {
   id: string
   name: string

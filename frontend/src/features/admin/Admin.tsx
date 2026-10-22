@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { Shield, Users, Layers, Radio, ArrowUpRight } from 'lucide-react'
 import { AdminStepUp, AppLink, SupportStart } from '@/components/Layout'
 import { get } from '@/lib/api'
-import type { Envelope, Page, Row, SupportSession } from '@/lib/types'
+import type { Envelope, Page, Row, SupportSession, WorkspaceMember } from '@/lib/types'
 import {
   PageHeading,
   Loading,
@@ -21,6 +21,9 @@ import {
 import { PayloadButton } from '@/features/events/Events'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import BulkReplay from './BulkReplay'
+import WorkspaceLimits, { type LimitSnapshot } from './WorkspaceLimits'
+import OwnershipTransfer from '@/features/workspaces/OwnershipTransfer'
 import {
   Dialog,
   DialogContent,
@@ -158,10 +161,29 @@ export function AdminList({ kind }: { kind: Kind }) {
   const page = Number(params.get('page') || 1)
   const filter = params.get('search') || ''
   const status = params.get('status') || ''
+  const workspaceFilter = kind === 'deliveries' ? params.get('workspace_id') || '' : ''
+  const eventFilter = kind === 'deliveries' ? params.get('event_id') || '' : ''
   const [selected, setSelected] = useState<Row | null>(null)
+  const selectionScope = JSON.stringify([kind, filter, status, workspaceFilter, eventFilter])
+  const [selection, setSelection] = useState(() => ({
+    scope: selectionScope,
+    ids: new Set<string>(),
+  }))
+  const deliveryIds = selection.scope === selectionScope ? selection.ids : new Set<string>()
+  function setDeliveryIds(update: Set<string> | ((current: Set<string>) => Set<string>)) {
+    setSelection((current) => ({
+      scope: selectionScope,
+      ids:
+        typeof update === 'function'
+          ? update(current.scope === selectionScope ? current.ids : new Set<string>())
+          : update,
+    }))
+  }
   const query = new URLSearchParams({ page: String(page) })
   if (filter) query.set(kind === 'events' ? 'type' : 'search', filter)
   if (status) query.set('status', status)
+  if (workspaceFilter) query.set('workspace_id', workspaceFilter)
+  if (eventFilter) query.set('event_id', eventFilter)
   const q = useQuery({
     queryKey: ['adminList', kind, query.toString()],
     queryFn: () => get<Page<Row>>('/api/admin/v1/' + kind + '?' + query),
@@ -169,6 +191,7 @@ export function AdminList({ kind }: { kind: Kind }) {
     refetchIntervalInBackground: false,
   })
   function change(key: string, value: string) {
+    setDeliveryIds(new Set())
     const next = new URLSearchParams(params)
     if (value) {
       next.set(key, value)
@@ -177,6 +200,20 @@ export function AdminList({ kind }: { kind: Kind }) {
     }
     next.delete('page')
     setParams(next, { replace: true })
+  }
+  const eligibleIds =
+    q.data?.data.filter((row) => row.status === 'failed').map((row) => row.id) || []
+  const allSelected = eligibleIds.length > 0 && eligibleIds.every((id) => deliveryIds.has(id))
+  const someSelected = eligibleIds.some((id) => deliveryIds.has(id))
+  function selectPage() {
+    setDeliveryIds((current) => {
+      const next = new Set(current)
+      for (const id of eligibleIds) {
+        if (allSelected || (someSelected && current.size >= 100)) next.delete(id)
+        else if (next.size < 100) next.add(id)
+      }
+      return next
+    })
   }
   return (
     <>
@@ -210,6 +247,35 @@ export function AdminList({ kind }: { kind: Kind }) {
           </select>
         ) : null}
       </div>
+      {kind === 'deliveries' ? (
+        <div className="selection-bar">
+          <div>
+            <strong aria-live="polite">
+              {t('selectedDeliveries', { count: deliveryIds.size })}
+            </strong>
+            <p>{t('bulkReplayLimit')}</p>
+          </div>
+          <div className="row-actions">
+            <Button
+              variant="ghost"
+              disabled={!deliveryIds.size}
+              onClick={() => setDeliveryIds(new Set())}
+            >
+              {t('clearSelection')}
+            </Button>
+            <BulkReplay
+              ids={[...deliveryIds]}
+              onProcessed={(ids) =>
+                setDeliveryIds((current) => {
+                  const next = new Set(current)
+                  ids.forEach((id) => next.delete(id))
+                  return next
+                })
+              }
+            />
+          </div>
+        </div>
+      ) : null}
       {q.isPending ? (
         <Loading />
       ) : q.isError ? (
@@ -222,6 +288,20 @@ export function AdminList({ kind }: { kind: Kind }) {
             <table>
               <thead>
                 <tr>
+                  {kind === 'deliveries' ? (
+                    <th className="selection-cell">
+                      <input
+                        type="checkbox"
+                        aria-label={t('selectFailedPage')}
+                        checked={allSelected}
+                        ref={(input) => {
+                          if (input) input.indeterminate = someSelected && !allSelected
+                        }}
+                        disabled={!eligibleIds.length || (deliveryIds.size >= 100 && !someSelected)}
+                        onChange={selectPage}
+                      />
+                    </th>
+                  ) : null}
                   {columns[kind].map(([path, label]) => (
                     <th key={path}>{t(label)}</th>
                   ))}
@@ -231,6 +311,27 @@ export function AdminList({ kind }: { kind: Kind }) {
               <tbody>
                 {q.data.data.map((row) => (
                   <tr key={row.id}>
+                    {kind === 'deliveries' ? (
+                      <td className="selection-cell">
+                        <input
+                          type="checkbox"
+                          aria-label={t('selectDelivery', { id: row.id })}
+                          checked={deliveryIds.has(row.id)}
+                          disabled={
+                            !deliveryIds.has(row.id) &&
+                            (row.status !== 'failed' || deliveryIds.size >= 100)
+                          }
+                          onChange={() =>
+                            setDeliveryIds((current) => {
+                              const next = new Set(current)
+                              if (next.has(row.id)) next.delete(row.id)
+                              else if (row.status === 'failed' && next.size < 100) next.add(row.id)
+                              return next
+                            })
+                          }
+                        />
+                      </td>
+                    ) : null}
                     {columns[kind].map(([path]) => (
                       <td key={path}>
                         {path === 'created_at' ? (
@@ -287,10 +388,11 @@ function AdminDetail({ kind, row, close }: { kind: Kind; row: Row; close: () => 
   const base = '/api/admin/v1/' + kind + '/' + row.id
   const details = useQuery({
     queryKey: ['adminDetail', kind, row.id],
-    queryFn: () => get<Record<string, unknown>>(base),
+    queryFn: () => get<Record<string, unknown> & Partial<LimitSnapshot>>(base),
     enabled: kind === 'users' || kind === 'workspaces' || kind === 'projects',
   })
-  const ownerId = String(row.owner_user_id || '')
+  const workspaceDetails = details.data?.data as (Row & { members?: WorkspaceMember[] }) | undefined
+  const ownerId = String(workspaceDetails?.owner_user_id || row.owner_user_id || '')
   const suspended = Boolean(row.suspended)
   return (
     <Dialog
@@ -376,41 +478,18 @@ function AdminDetail({ kind, row, close }: { kind: Kind; row: Row; close: () => 
                 fields={[reason]}
                 values={(v) => ({ ...v, action: 'archive' })}
               />
-              <MutationDialog
-                label="transfer"
-                url={base + '/actions'}
-                fields={[{ name: 'user_id', label: 'userId', required: true }, reason]}
-                values={(v) => ({ ...v, action: 'transfer' })}
-              />
-              <MutationDialog
-                label="updateLimit"
-                method="put"
-                url={base + '/limits'}
-                fields={[
-                  {
-                    name: 'key',
-                    label: 'limitKey',
-                    type: 'select',
-                    value: 'events_daily',
-                    options: [
-                      'members',
-                      'projects',
-                      'endpoints',
-                      'sources',
-                      'api_keys',
-                      'events_daily',
-                      'replays_daily',
-                      'ingest_per_minute',
-                      'workspace_per_second',
-                      'endpoint_per_second',
-                    ].map((value) => ({ value, label: value })),
-                  },
-                  { name: 'value', label: 'limitValue', required: true },
-                  reason,
-                ]}
-                values={(v) => ({ ...v, value: Number(v.value) })}
-              />
+              {workspaceDetails?.members ? (
+                <OwnershipTransfer
+                  workspaceId={row.id}
+                  ownerId={ownerId}
+                  admin
+                  members={workspaceDetails.members}
+                />
+              ) : null}
               <SupportStart userId={ownerId} workspaceId={row.id} />
+              <AppLink to={'/app/admin/deliveries?workspace_id=' + row.id}>
+                {t('deliveries')}
+              </AppLink>
             </div>
           ) : null}
           {kind === 'projects' ? (
@@ -427,6 +506,19 @@ function AdminDetail({ kind, row, close }: { kind: Kind; row: Row; close: () => 
             </div>
           ) : null}
           {kind === 'events' ? <PayloadButton admin url={base + '/payload'} /> : null}
+          {kind === 'workspaces' &&
+          details.data?.effective_limits &&
+          details.data.default_limits &&
+          details.data.limits ? (
+            <WorkspaceLimits
+              workspaceId={row.id}
+              snapshot={{
+                limits: details.data.limits,
+                default_limits: details.data.default_limits,
+                effective_limits: details.data.effective_limits,
+              }}
+            />
+          ) : null}
           {details.data ? (
             <AdminRelatedResources kind={kind} value={details.data} workspaceId={row.id} />
           ) : null}
@@ -483,11 +575,11 @@ export function AdminSettings() {
         </section>
       ))}
       <section className="open-section">
-        <h2>{t('dailyUsage')}</h2>
+        <h2>{t('defaultLimits')}</h2>
         {Object.entries(d.limits).map(([key, value]) => (
           <div className="settings-section" key={key}>
             <div>
-              <code>{key}</code>
+              <strong>{t('limit_' + key, { defaultValue: key })}</strong>
               <p>{value}</p>
             </div>
             <MutationDialog
@@ -495,7 +587,15 @@ export function AdminSettings() {
               method="put"
               url="/api/admin/v1/settings"
               fields={[
-                { name: 'value', label: 'limitValue', value: String(value), required: true },
+                {
+                  name: 'value',
+                  label: 'limitValue',
+                  type: 'number',
+                  min: 1,
+                  max: 1000000,
+                  value: String(value),
+                  required: true,
+                },
                 reason,
               ]}
               values={(v) => ({ ...v, key: 'limit.' + key, value: Number(v.value) })}

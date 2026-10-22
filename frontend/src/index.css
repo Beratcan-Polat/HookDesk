@@ -470,6 +470,79 @@ td a {
 tbody tr:hover {
   background: var(--surface);
 }
+.selection-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.selection-bar p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.selection-cell {
+  width: 44px;
+}
+.selection-cell input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+.bulk-replay-dialog {
+  max-width: 680px;
+}
+.bulk-replay-results {
+  max-height: 45vh;
+  overflow-y: auto;
+}
+.replay-result {
+  display: grid;
+  gap: 6px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.replay-result code {
+  font-size: 12px;
+}
+.replay-accepted {
+  color: var(--primary);
+}
+.workspace-limit {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.workspace-limit > div:first-child {
+  flex: 1 1 220px;
+}
+.workspace-limit p,
+.workspace-limit small,
+.limit-value span {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.workspace-limit p {
+  margin: 4px 0;
+}
+.limit-value {
+  display: grid;
+  gap: 4px;
+  min-width: 100px;
+}
+.limit-value strong {
+  font-size: 20px;
+}
 .filter-bar {
   display: flex;
   gap: 10px;

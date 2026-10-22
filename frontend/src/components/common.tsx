@@ -175,7 +175,9 @@ export function Pager<T>({ page, onChange }: { page: Page<T>; onChange: (n: numb
 export type Field = {
   name: string
   label: string
-  type?: 'text' | 'email' | 'password' | 'textarea' | 'select' | 'json'
+  type?: 'text' | 'email' | 'password' | 'textarea' | 'select' | 'json' | 'number'
+  min?: number
+  max?: number
   required?: boolean
   value?: string
   options?: { value: string; label: string }[]
@@ -311,9 +313,21 @@ export function MutationDialog({
                   ) : (
                     <Input
                       type={field.type || 'text'}
+                      min={field.min}
+                      max={field.max}
+                      step={field.type === 'number' ? 1 : undefined}
                       autoComplete={field.type === 'password' ? 'current-password' : 'off'}
                       {...register(field.name, {
                         required: field.required ? t('required') : false,
+                        validate:
+                          field.type === 'number'
+                            ? (value) =>
+                                (value.trim() !== '' &&
+                                  Number.isInteger(Number(value)) &&
+                                  Number(value) >= (field.min ?? Number.MIN_SAFE_INTEGER) &&
+                                  Number(value) <= (field.max ?? Number.MAX_SAFE_INTEGER)) ||
+                                t('wholeNumberRange', { min: field.min, max: field.max })
+                            : undefined,
                       })}
                     />
                   )}{' '}
