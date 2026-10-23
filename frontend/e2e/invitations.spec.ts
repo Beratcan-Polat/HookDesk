@@ -22,7 +22,7 @@ for (const locale of ['en', 'tr'] as const) {
     await page.getByRole('button', { name: l.invite, exact: true }).click()
     const dialog = page.getByRole('dialog')
     await dialog.getByLabel(l.email, { exact: true }).fill(fixture.invitee.email)
-    await dialog.getByLabel(l.role, { exact: true }).selectOption('viewer')
+    await dialog.getByRole('combobox', { name: l.role, exact: true }).selectOption('viewer')
     await dialog.getByRole('button', { name: l.proceed, exact: true }).click()
     await expect(dialog).toHaveCount(0)
     await expect(page.getByRole('row').filter({ hasText: fixture.invitee.email })).toBeVisible()
