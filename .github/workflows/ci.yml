@@ -91,6 +91,7 @@ jobs:
         run: docker compose down --volumes --remove-orphans
   browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:18-alpine
@@ -104,6 +105,9 @@ jobs:
         image: redis:8-alpine
         ports: ['6379:6379']
         options: --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
+      mailpit:
+        image: axllent/mailpit:v1.27
+        ports: ['1025:1025', '8025:8025']
     env:
       APP_ENV: testing
       APP_KEY: base64:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
@@ -121,7 +125,11 @@ jobs:
       CACHE_STORE: redis
       REDIS_CLIENT: predis
       REDIS_HOST: 127.0.0.1
-      MAIL_MAILER: log
+      MAIL_MAILER: smtp
+      MAIL_HOST: 127.0.0.1
+      MAIL_PORT: 1025
+      MAIL_FROM_ADDRESS: no-reply@hookdesk.test
+      E2E_MAILPIT_URL: http://127.0.0.1:8025
       RECEIVER_URL: http://127.0.0.1:8001
     steps:
       - uses: actions/checkout@v4
@@ -144,9 +152,11 @@ jobs:
           php artisan migrate --force
           php artisan hookdesk:demo > ../.runtime/browser-user.txt
           php tests/Support/seed-browser.php > ../.runtime/browser-admin.json
+          php tests/Support/seed-lifecycle.php > ../.runtime/browser-lifecycle.json
           echo "E2E_EMAIL=$(sed -n 's/^Email: //p' ../.runtime/browser-user.txt)" >> "$GITHUB_ENV"
           echo "E2E_PASSWORD=$(sed -n 's/^Generated local password: //p' ../.runtime/browser-user.txt)" >> "$GITHUB_ENV"
           echo "E2E_ADMIN_FILE=$GITHUB_WORKSPACE/.runtime/browser-admin.json" >> "$GITHUB_ENV"
+          echo "E2E_LIFECYCLE_FILE=$GITHUB_WORKSPACE/.runtime/browser-lifecycle.json" >> "$GITHUB_ENV"
       - name: Start application services
         run: |
           cd backend

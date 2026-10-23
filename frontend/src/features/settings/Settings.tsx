@@ -30,6 +30,7 @@ export default function SettingsPage() {
   }
   async function confirm() {
     try {
+      setError(null)
       await api.post('/user/confirmed-two-factor-authentication', { code })
       const response = await api.get<string[]>('/user/two-factor-recovery-codes')
       setCodes(response.data)
