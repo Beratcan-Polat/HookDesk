@@ -503,6 +503,7 @@ const phrases: Record<string, [string, string]> = {
     'Bu çalışma alanına erişim yetkin yok.',
   ],
   support_session_expired: ['This support session has ended.', 'Bu destek oturumu sona ermiş.'],
+  returnToAdmin: ['Return to administration', 'Yönetim paneline dön'],
   daily_limit_reached: [
     'The daily usage limit has been reached.',
     'Günlük kullanım limitine ulaşıldı.',

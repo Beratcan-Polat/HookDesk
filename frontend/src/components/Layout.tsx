@@ -1,4 +1,5 @@
 import SupportStartButton from '@/features/support/SupportStart'
+import SupportAccess from '@/features/support/SupportAccess'
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { Link, NavLink, Navigate, Outlet, useLocation, useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -135,11 +136,14 @@ export default function Layout() {
     queryKey: ['workspaces', supportId],
     queryFn: () => get<Envelope<Workspace[]>>(prefix + '/workspaces'),
     enabled: !!me.data?.data.email_verified_at,
+    retry: supportId ? false : undefined,
   })
   const sessions = useQuery({
     queryKey: ['supportSessions', supportId],
     queryFn: () => get<Envelope<SupportSession[]>>('/api/admin/v1/support-sessions'),
     enabled: !!supportId && me.data?.data.platform_role === 'super_admin',
+    refetchInterval: supportId ? 5000 : false,
+    retry: false,
   })
   const workspace =
     workspaces.data?.data.find((w) => w.id === params.get('w')) ?? workspaces.data?.data[0]
@@ -168,159 +172,166 @@ export default function Layout() {
     !project?.archived_at
   const canManage = !!workspace && ['owner', 'admin'].includes(workspace.role)
   return (
-    <Scope.Provider
-      value={{
-        user,
-        workspaces: workspaces.data?.data ?? [],
-        workspace,
-        project,
-        prefix,
-        supportId,
-        supportSession: session,
-        canWrite,
-        canManage,
-        query: '?' + query.toString(),
-      }}
+    <SupportAccess
+      enabled={!!supportId}
+      session={session}
+      pending={sessions.isPending}
+      error={sessions.error || workspaces.error}
     >
-      <div className="app-shell">
-        <aside className={'sidebar ' + (mobile ? 'mobile-open' : '')}>
-          <div className="sidebar-top">
-            <Link className="brand" to="/">
-              <Webhook size={24} />
-              HookDesk
-            </Link>
-            <button
-              className="mobile-close"
-              aria-label={t('close')}
-              onClick={() => setMobile(false)}
-            >
-              <X size={20} />
-            </button>
-          </div>
-          <div className="workspace-picker">
-            <label htmlFor="workspace-select">{t('workspace')}</label>
-            <select
-              id="workspace-select"
-              value={workspace?.id ?? ''}
-              onChange={(e) => {
-                params.set('w', e.target.value)
-                params.delete('p')
-                setParams(params)
-              }}
-            >
-              {(workspaces.data?.data ?? []).map((w) => (
-                <option key={w.id} value={w.id}>
-                  {w.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="nav-label">{t(admin ? 'admin' : 'operations')}</div>
-          <nav aria-label={t('menu')}>
-            {(admin ? adminLinks : links)
-              .filter(
-                ([, key]) => !supportId || !['keys', 'team', 'settings', 'audit'].includes(key),
-              )
-              .map(([path, key, Icon]) => (
-                <NavLink
-                  key={path}
-                  end={path === '/app' || path === '/app/admin'}
-                  to={{ pathname: path, search: '?' + query.toString() }}
-                  onClick={() => setMobile(false)}
-                >
-                  <Icon size={17} />
-                  {t(key)}
-                </NavLink>
-              ))}
-          </nav>
-          <div className="sidebar-bottom">
-            <Link to="/docs">
-              <BookOpen size={17} />
-              {t('docs')}
-            </Link>
-            {user.platform_role === 'super_admin' && !supportId ? (
-              <AppLink to={admin ? '/app' : '/app/admin'}>
-                <Shield size={17} />
-                {t(admin ? 'workspace' : 'admin')}
-              </AppLink>
-            ) : null}
-            <div className="user-chip">
-              <span className="avatar">{user.name.slice(0, 2).toUpperCase()}</span>
-              <div>
-                <strong>{user.name}</strong>
-                <small>{user.email}</small>
-              </div>
-              <button onClick={() => void logout()} aria-label={t('signOut')}>
-                <LogOut size={16} />
-              </button>
-            </div>
-          </div>
-        </aside>
-        <div className="main-column">
-          <header className="app-header">
-            <div>
+      <Scope.Provider
+        value={{
+          user,
+          workspaces: workspaces.data?.data ?? [],
+          workspace,
+          project,
+          prefix,
+          supportId,
+          supportSession: session,
+          canWrite,
+          canManage,
+          query: '?' + query.toString(),
+        }}
+      >
+        <div className="app-shell">
+          <aside className={'sidebar ' + (mobile ? 'mobile-open' : '')}>
+            <div className="sidebar-top">
+              <Link className="brand" to="/">
+                <Webhook size={24} />
+                HookDesk
+              </Link>
               <button
-                className="mobile-menu"
-                aria-label={t('menu')}
-                onClick={() => setMobile(true)}
+                className="mobile-close"
+                aria-label={t('close')}
+                onClick={() => setMobile(false)}
               >
-                <Menu size={20} />
+                <X size={20} />
               </button>
-              <span>{admin ? t('admin') : workspace?.name || 'HookDesk'}</span>
-              <ChevronRight size={14} />
-              {!admin ? (
-                <select
-                  aria-label={t('project')}
-                  value={project?.id ?? ''}
-                  onChange={(e) => {
-                    params.set('p', e.target.value)
-                    setParams(params)
-                  }}
-                >
-                  <option value="">{t('selectProject')}</option>
-                  {workspace?.projects
-                    .filter((p) => !p.archived_at)
-                    .map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                </select>
-              ) : (
-                <span>{t('operations')}</span>
-              )}
             </div>
-            <LanguageSwitch />
-          </header>
-          {session ? <SupportBanner session={session} /> : null}
-          <main className="main-content">
-            {!admin && workspace?.blocked ? (
-              <div className="blocked-banner">{t('blocked')}</div>
-            ) : null}
-            {workspaces.isError && !admin ? (
-              <Failure error={workspaces.error} retry={() => void workspaces.refetch()} />
-            ) : workspaces.isPending && !admin ? (
-              <Loading />
-            ) : !workspace && !admin ? (
-              <Empty title="firstWorkspace" body="firstWorkspaceBody">
-                <MutationDialog
-                  label="newWorkspace"
-                  url="/api/dashboard/v1/workspaces"
-                  fields={[{ name: 'name', label: 'name', required: true }]}
-                  variant="default"
-                />
-              </Empty>
-            ) : (
-              <Outlet />
-            )}
-          </main>
-          <footer className="app-footer">
-            <span>HookDesk</span>
-            <span>Webhook operations</span>
-          </footer>
+            <div className="workspace-picker">
+              <label htmlFor="workspace-select">{t('workspace')}</label>
+              <select
+                id="workspace-select"
+                value={workspace?.id ?? ''}
+                onChange={(e) => {
+                  params.set('w', e.target.value)
+                  params.delete('p')
+                  setParams(params)
+                }}
+              >
+                {(workspaces.data?.data ?? []).map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="nav-label">{t(admin ? 'admin' : 'operations')}</div>
+            <nav aria-label={t('menu')}>
+              {(admin ? adminLinks : links)
+                .filter(
+                  ([, key]) => !supportId || !['keys', 'team', 'settings', 'audit'].includes(key),
+                )
+                .map(([path, key, Icon]) => (
+                  <NavLink
+                    key={path}
+                    end={path === '/app' || path === '/app/admin'}
+                    to={{ pathname: path, search: '?' + query.toString() }}
+                    onClick={() => setMobile(false)}
+                  >
+                    <Icon size={17} />
+                    {t(key)}
+                  </NavLink>
+                ))}
+            </nav>
+            <div className="sidebar-bottom">
+              <Link to="/docs">
+                <BookOpen size={17} />
+                {t('docs')}
+              </Link>
+              {user.platform_role === 'super_admin' && !supportId ? (
+                <AppLink to={admin ? '/app' : '/app/admin'}>
+                  <Shield size={17} />
+                  {t(admin ? 'workspace' : 'admin')}
+                </AppLink>
+              ) : null}
+              <div className="user-chip">
+                <span className="avatar">{user.name.slice(0, 2).toUpperCase()}</span>
+                <div>
+                  <strong>{user.name}</strong>
+                  <small>{user.email}</small>
+                </div>
+                <button onClick={() => void logout()} aria-label={t('signOut')}>
+                  <LogOut size={16} />
+                </button>
+              </div>
+            </div>
+          </aside>
+          <div className="main-column">
+            <header className="app-header">
+              <div>
+                <button
+                  className="mobile-menu"
+                  aria-label={t('menu')}
+                  onClick={() => setMobile(true)}
+                >
+                  <Menu size={20} />
+                </button>
+                <span>{admin ? t('admin') : workspace?.name || 'HookDesk'}</span>
+                <ChevronRight size={14} />
+                {!admin ? (
+                  <select
+                    aria-label={t('project')}
+                    value={project?.id ?? ''}
+                    onChange={(e) => {
+                      params.set('p', e.target.value)
+                      setParams(params)
+                    }}
+                  >
+                    <option value="">{t('selectProject')}</option>
+                    {workspace?.projects
+                      .filter((p) => !p.archived_at)
+                      .map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                  </select>
+                ) : (
+                  <span>{t('operations')}</span>
+                )}
+              </div>
+              <LanguageSwitch />
+            </header>
+            {session ? <SupportBanner session={session} /> : null}
+            <main className="main-content">
+              {!admin && workspace?.blocked ? (
+                <div className="blocked-banner">{t('blocked')}</div>
+              ) : null}
+              {workspaces.isError && !admin ? (
+                <Failure error={workspaces.error} retry={() => void workspaces.refetch()} />
+              ) : workspaces.isPending && !admin ? (
+                <Loading />
+              ) : !workspace && !admin ? (
+                <Empty title="firstWorkspace" body="firstWorkspaceBody">
+                  <MutationDialog
+                    label="newWorkspace"
+                    url="/api/dashboard/v1/workspaces"
+                    fields={[{ name: 'name', label: 'name', required: true }]}
+                    variant="default"
+                  />
+                </Empty>
+              ) : (
+                <Outlet />
+              )}
+            </main>
+            <footer className="app-footer">
+              <span>HookDesk</span>
+              <span>Webhook operations</span>
+            </footer>
+          </div>
         </div>
-      </div>
-    </Scope.Provider>
+      </Scope.Provider>
+    </SupportAccess>
   )
 }
 export function RequireProject({ children }: { children: ReactNode }) {
