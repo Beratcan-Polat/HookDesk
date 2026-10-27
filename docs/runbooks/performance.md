@@ -2,6 +2,8 @@
 
 I measure API acceptance separately from queued webhook delivery. The harness sends real HTTP requests through Caddy, writes events to PostgreSQL, dispatches through Redis and delivers to an internal receiver that verifies the HMAC signature.
 
+Recorded baseline: [27 October 2026](../performance/2026-10-27.md), with raw JSON and an HTML report.
+
 ## Run
 
 Requirements: Docker Engine with Linux containers, Docker Compose, Node.js 24 and Git. Run from the repository root:

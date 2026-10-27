@@ -96,4 +96,4 @@ Run `node infra/performance/run.mjs` from the repository root for an isolated Do
 
 ## CI
 
-[GitHub Actions](../../.github/workflows/ci.yml) runs backend checks with PostgreSQL and Redis, frontend checks, container builds, the complete Docker smoke/recovery flow and browser journeys. Run results are available in the repository's [Actions tab](https://github.com/Beratcan-Polat/HookDesk/actions).
+[GitHub Actions](../../.github/workflows/ci.yml) runs backend checks with PostgreSQL and Redis, frontend checks, container builds, the complete Docker smoke/recovery flow, browser journeys and an isolated load-test smoke profile. Run results are available in the repository's [Actions tab](https://github.com/Beratcan-Polat/HookDesk/actions).

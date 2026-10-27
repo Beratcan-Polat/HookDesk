@@ -1,0 +1,1668 @@
+{
+  "schema": 1,
+  "run": "load-cc5a502b-79ef-49a5-a85c-757cdfc5a8ca",
+  "started_at": "2026-10-27T08:49:41.149Z",
+  "profile": "baseline",
+  "environment": {
+    "docker": "29.9.2",
+    "docker_cpu_count": 12,
+    "docker_memory_bytes": 3964461056,
+    "platform": "win32",
+    "node": "v24.12.0",
+    "development_stack_running": true,
+    "app_debug": false,
+    "code_mount": "image (no application source bind)",
+    "php_fpm_max_children": 5,
+    "receiver_fpm_max_children": 5,
+    "revision": "c957ce400a34bdc461d6749f751e3a948b83315f",
+    "harness_sha256": "d23c00b2cb0dc93a4f06701578f6d9d1a52dc4d4b7b985e132680891d99101be",
+    "php": "8.4.27",
+    "image_id": "sha256:e20067c0a4f60dca3e48079ae41ecc2b2788864a5e7c7b379607857fb5c3d114"
+  },
+  "policy": {
+    "requests": 35,
+    "boundary_concurrency": 10,
+    "accepted": 30,
+    "rate_limited": 5,
+    "read_after_limit_status": 200,
+    "metrics": {
+      "events": 30,
+      "deliveries": 0,
+      "statuses": [],
+      "attempts": 0,
+      "receipts": 0,
+      "processed_receipts": 0,
+      "receiver_requests": 0,
+      "usage": 30
+    },
+    "limits": {
+      "owned_workspaces": 3,
+      "members": 10,
+      "projects": 3,
+      "endpoints": 5,
+      "sources": 3,
+      "api_keys": 5,
+      "events_daily": 500,
+      "replays_daily": 100,
+      "ingest_per_minute": 30,
+      "workspace_per_second": 5,
+      "endpoint_per_second": 2
+    },
+    "passed": true
+  },
+  "phases": [
+    {
+      "name": "warmup",
+      "workers": 1,
+      "model": "closed-loop burst",
+      "concurrency": 2,
+      "offered_rate_per_second": null,
+      "offered": 20,
+      "started": 20,
+      "dropped": 0,
+      "accepted": 20,
+      "unexpected_response_count": 0,
+      "unexpected_response_rate": 0,
+      "unique_response_ids": 20,
+      "status_counts": {
+        "202": 20
+      },
+      "acceptance_ms": {
+        "count": 20,
+        "min": 50.47,
+        "mean": 67.48,
+        "p50": 65.92,
+        "p95": 93.47,
+        "p99": 95.33,
+        "max": 95.33
+      },
+      "acceptance_elapsed_ms": 684,
+      "observed_request_rate_per_second": 29.26,
+      "metrics": {
+        "events": 20,
+        "deliveries": 20,
+        "statuses": {
+          "succeeded": 20
+        },
+        "attempts": 20,
+        "receipts": 20,
+        "processed_receipts": 20,
+        "receiver_requests": 20,
+        "usage": 20,
+        "http_ms": {
+          "count": 20,
+          "min": 32,
+          "mean": 59.7,
+          "p50": 39,
+          "p95": 58,
+          "p99": 427,
+          "max": 427
+        },
+        "queue_ms": {
+          "count": 20,
+          "min": 1000,
+          "mean": 1550,
+          "p50": 2000,
+          "p95": 2000,
+          "p99": 2000,
+          "max": 2000
+        },
+        "delivery_ms": {
+          "count": 20,
+          "min": 1000,
+          "mean": 1600,
+          "p50": 2000,
+          "p95": 2000,
+          "p99": 2000,
+          "max": 2000
+        }
+      },
+      "drain_after_requests_ms": 4341.464800000002,
+      "sampled_pending_max_after_requests": 20,
+      "delivery_rate_from_first_request_per_second": 3.98,
+      "last_response_offset_ms": 684,
+      "limits": {
+        "owned_workspaces": 3,
+        "members": 10,
+        "projects": 3,
+        "endpoints": 5,
+        "sources": 3,
+        "api_keys": 5,
+        "events_daily": 100000,
+        "replays_daily": 100,
+        "ingest_per_minute": 60000,
+        "workspace_per_second": 1000,
+        "endpoint_per_second": 1000
+      },
+      "passed": true,
+      "checks": {
+        "events": true,
+        "usage": true,
+        "deliveries": true,
+        "succeeded": true,
+        "attempts": true,
+        "receiverRequests": true,
+        "signedReceipts": true
+      }
+    },
+    {
+      "name": "idempotency",
+      "workers": 1,
+      "model": "closed-loop burst",
+      "concurrency": 8,
+      "offered_rate_per_second": null,
+      "offered": 16,
+      "started": 16,
+      "dropped": 0,
+      "accepted": 16,
+      "unexpected_response_count": 0,
+      "unexpected_response_rate": 0,
+      "unique_response_ids": 1,
+      "status_counts": {
+        "202": 16
+      },
+      "acceptance_ms": {
+        "count": 16,
+        "min": 71.18,
+        "mean": 154.39,
+        "p50": 168.17,
+        "p95": 198.12,
+        "p99": 198.12,
+        "max": 198.12
+      },
+      "acceptance_elapsed_ms": 391,
+      "observed_request_rate_per_second": 40.92,
+      "metrics": {
+        "events": 1,
+        "deliveries": 1,
+        "statuses": {
+          "succeeded": 1
+        },
+        "attempts": 1,
+        "receipts": 1,
+        "processed_receipts": 1,
+        "receiver_requests": 1,
+        "usage": 1,
+        "http_ms": {
+          "count": 1,
+          "min": 41,
+          "mean": 41,
+          "p50": 41,
+          "p95": 41,
+          "p99": 41,
+          "max": 41
+        },
+        "queue_ms": {
+          "count": 1,
+          "min": 1000,
+          "mean": 1000,
+          "p50": 1000,
+          "p95": 1000,
+          "p99": 1000,
+          "max": 1000
+        },
+        "delivery_ms": {
+          "count": 1,
+          "min": 1000,
+          "mean": 1000,
+          "p50": 1000,
+          "p95": 1000,
+          "p99": 1000,
+          "max": 1000
+        }
+      },
+      "drain_after_requests_ms": 2591.496800000001,
+      "sampled_pending_max_after_requests": 1,
+      "delivery_rate_from_first_request_per_second": 0.34,
+      "last_response_offset_ms": 391,
+      "limits": {
+        "owned_workspaces": 3,
+        "members": 10,
+        "projects": 3,
+        "endpoints": 5,
+        "sources": 3,
+        "api_keys": 5,
+        "events_daily": 100000,
+        "replays_daily": 100,
+        "ingest_per_minute": 60000,
+        "workspace_per_second": 1000,
+        "endpoint_per_second": 1000
+      },
+      "passed": true,
+      "checks": {
+        "events": true,
+        "usage": true,
+        "deliveries": true,
+        "succeeded": true,
+        "attempts": true,
+        "receiverRequests": true,
+        "signedReceipts": true
+      }
+    },
+    {
+      "name": "burst-1",
+      "workers": 1,
+      "model": "closed-loop burst",
+      "concurrency": 1,
+      "offered_rate_per_second": null,
+      "offered": 40,
+      "started": 40,
+      "dropped": 0,
+      "accepted": 40,
+      "unexpected_response_count": 0,
+      "unexpected_response_rate": 0,
+      "unique_response_ids": 40,
+      "status_counts": {
+        "202": 40
+      },
+      "acceptance_ms": {
+        "count": 40,
+        "min": 51.38,
+        "mean": 65.44,
+        "p50": 61.68,
+        "p95": 85.48,
+        "p99": 89.93,
+        "max": 89.93
+      },
+      "acceptance_elapsed_ms": 2619,
+      "observed_request_rate_per_second": 15.28,
+      "metrics": {
+        "events": 40,
+        "deliveries": 40,
+        "statuses": {
+          "succeeded": 40
+        },
+        "attempts": 40,
+        "receipts": 40,
+        "processed_receipts": 40,
+        "receiver_requests": 40,
+        "usage": 40,
+        "http_ms": {
+          "count": 40,
+          "min": 32,
+          "mean": 42,
+          "p50": 39,
+          "p95": 56,
+          "p99": 60,
+          "max": 60
+        },
+        "queue_ms": {
+          "count": 40,
+          "min": 0,
+          "mean": 425,
+          "p50": 0,
+          "p95": 1000,
+          "p99": 1000,
+          "max": 1000
+        },
+        "delivery_ms": {
+          "count": 40,
+          "min": 0,
+          "mean": 500,
+          "p50": 0,
+          "p95": 1000,
+          "p99": 2000,
+          "max": 2000
+        }
+      },
+      "drain_after_requests_ms": 2624.7137000000002,
+      "sampled_pending_max_after_requests": 12,
+      "delivery_rate_from_first_request_per_second": 7.63,
+      "last_response_offset_ms": 2619,
+      "limits": {
+        "owned_workspaces": 3,
+        "members": 10,
+        "projects": 3,
+        "endpoints": 5,
+        "sources": 3,
+        "api_keys": 5,
+        "events_daily": 100000,
+        "replays_daily": 100,
+        "ingest_per_minute": 60000,
+        "workspace_per_second": 1000,
+        "endpoint_per_second": 1000
+      },
+      "passed": true,
+      "checks": {
+        "events": true,
+        "usage": true,
+        "deliveries": true,
+        "succeeded": true,
+        "attempts": true,
+        "receiverRequests": true,
+        "signedReceipts": true
+      }
+    },
+    {
+      "name": "burst-5",
+      "workers": 1,
+      "model": "closed-loop burst",
+      "concurrency": 5,
+      "offered_rate_per_second": null,
+      "offered": 100,
+      "started": 100,
+      "dropped": 0,
+      "accepted": 100,
+      "unexpected_response_count": 0,
+      "unexpected_response_rate": 0,
+      "unique_response_ids": 100,
+      "status_counts": {
+        "202": 100
+      },
+      "acceptance_ms": {
+        "count": 100,
+        "min": 79.4,
+        "mean": 148.36,
+        "p50": 147.78,
+        "p95": 209.77,
+        "p99": 253.99,
+        "max": 255.21
+      },
+      "acceptance_elapsed_ms": 3006,
+      "observed_request_rate_per_second": 33.26,
+      "metrics": {
+        "events": 100,
+        "deliveries": 100,
+        "statuses": {
+          "succeeded": 100
+        },
+        "attempts": 100,
+        "receipts": 100,
+        "processed_receipts": 100,
+        "receiver_requests": 100,
+        "usage": 100,
+        "http_ms": {
+          "count": 100,
+          "min": 30,
+          "mean": 46.08,
+          "p50": 43,
+          "p95": 69,
+          "p99": 83,
+          "max": 129
+        },
+        "queue_ms": {
+          "count": 100,
+          "min": 1000,
+          "mean": 2620,
+          "p50": 3000,
+          "p95": 4000,
+          "p99": 5000,
+          "max": 5000
+        },
+        "delivery_ms": {
+          "count": 100,
+          "min": 1000,
+          "mean": 2690,
+          "p50": 3000,
+          "p95": 4000,
+          "p99": 5000,
+          "max": 5000
+        }
+      },
+      "drain_after_requests_ms": 5842.611299999997,
+      "sampled_pending_max_after_requests": 68,
+      "delivery_rate_from_first_request_per_second": 11.3,
+      "last_response_offset_ms": 3006,
+      "limits": {
+        "owned_workspaces": 3,
+        "members": 10,
+        "projects": 3,
+        "endpoints": 5,
+        "sources": 3,
+        "api_keys": 5,
+        "events_daily": 100000,
+        "replays_daily": 100,
+        "ingest_per_minute": 60000,
+        "workspace_per_second": 1000,
+        "endpoint_per_second": 1000
+      },
+      "passed": true,
+      "checks": {
+        "events": true,
+        "usage": true,
+        "deliveries": true,
+        "succeeded": true,
+        "attempts": true,
+        "receiverRequests": true,
+        "signedReceipts": true
+      }
+    },
+    {
+      "name": "burst-10",
+      "workers": 1,
+      "model": "closed-loop burst",
+      "concurrency": 10,
+      "offered_rate_per_second": null,
+      "offered": 100,
+      "started": 100,
+      "dropped": 0,
+      "accepted": 100,
+      "unexpected_response_count": 0,
+      "unexpected_response_rate": 0,
+      "unique_response_ids": 100,
+      "status_counts": {
+        "202": 100
+      },
+      "acceptance_ms": {
+        "count": 100,
+        "min": 88.56,
+        "mean": 287.49,
+        "p50": 289.72,
+        "p95": 357.64,
+        "p99": 364.29,
+        "max": 367.62
+      },
+      "acceptance_elapsed_ms": 2994,
+      "observed_request_rate_per_second": 33.4,
+      "metrics": {
+        "events": 100,
+        "deliveries": 100,
+        "statuses": {
+          "succeeded": 100
+        },
+        "attempts": 100,
+        "receipts": 100,
+        "processed_receipts": 100,
+        "receiver_requests": 100,
+        "usage": 100,
+        "http_ms": {
+          "count": 100,
+          "min": 31,
+          "mean": 49.94,
+          "p50": 46,
+          "p95": 73,
+          "p99": 91,
+          "max": 108
+        },
+        "queue_ms": {
+          "count": 100,
+          "min": 1000,
+          "mean": 3110,
+          "p50": 3000,
+          "p95": 5000,
+          "p99": 5000,
+          "max": 5000
+        },
+        "delivery_ms": {
+          "count": 100,
+          "min": 1000,
+          "mean": 3180,
+          "p50": 3000,
+          "p95": 5000,
+          "p99": 5000,
+          "max": 6000
+        }
+      },
+      "drain_after_requests_ms": 7439.295400000003,
+      "sampled_pending_max_after_requests": 71,
+      "delivery_rate_from_first_request_per_second": 9.58,
+      "last_response_offset_ms": 2994,
+      "limits": {
+        "owned_workspaces": 3,
+        "members": 10,
+        "projects": 3,
+        "endpoints": 5,
+        "sources": 3,
+        "api_keys": 5,
+        "events_daily": 100000,
+        "replays_daily": 100,
+        "ingest_per_minute": 60000,
+        "workspace_per_second": 1000,
+        "endpoint_per_second": 1000
+      },
+      "passed": true,
+      "checks": {
+        "events": true,
+        "usage": true,
+        "deliveries": true,
+        "succeeded": true,
+        "attempts": true,
+        "receiverRequests": true,
+        "signedReceipts": true
+      }
+    },
+    {
+      "name": "sustained-60s",
+      "workers": 1,
+      "model": "bounded constant arrival",
+      "concurrency": 10,
+      "offered_rate_per_second": 5,
+      "offered": 300,
+      "started": 300,
+      "dropped": 0,
+      "accepted": 300,
+      "unexpected_response_count": 0,
+      "unexpected_response_rate": 0,
+      "unique_response_ids": 300,
+      "status_counts": {
+        "202": 300
+      },
+      "acceptance_ms": {
+        "count": 300,
+        "min": 47.16,
+        "mean": 81.09,
+        "p50": 74.62,
+        "p95": 123.91,
+        "p99": 193.62,
+        "max": 260.93
+      },
+      "acceptance_elapsed_ms": 59876,
+      "observed_request_rate_per_second": 5.01,
+      "metrics": {
+        "events": 300,
+        "deliveries": 300,
+        "statuses": {
+          "succeeded": 300
+        },
+        "attempts": 300,
+        "receipts": 300,
+        "processed_receipts": 300,
+        "receiver_requests": 300,
+        "usage": 300,
+        "http_ms": {
+          "count": 300,
+          "min": 29,
+          "mean": 50.58,
+          "p50": 45,
+          "p95": 83,
+          "p99": 101,
+          "max": 176
+        },
+        "queue_ms": {
+          "count": 300,
+          "min": 0,
+          "mean": 556.67,
+          "p50": 1000,
+          "p95": 1000,
+          "p99": 1000,
+          "max": 2000
+        },
+        "delivery_ms": {
+          "count": 300,
+          "min": 0,
+          "mean": 616.67,
+          "p50": 1000,
+          "p95": 1000,
+          "p99": 1000,
+          "max": 2000
+        }
+      },
+      "drain_after_requests_ms": 2892.5448000000033,
+      "sampled_pending_max_after_requests": 2,
+      "delivery_rate_from_first_request_per_second": 4.78,
+      "last_response_offset_ms": 59876,
+      "limits": {
+        "owned_workspaces": 3,
+        "members": 10,
+        "projects": 3,
+        "endpoints": 5,
+        "sources": 3,
+        "api_keys": 5,
+        "events_daily": 100000,
+        "replays_daily": 100,
+        "ingest_per_minute": 60000,
+        "workspace_per_second": 1000,
+        "endpoint_per_second": 1000
+      },
+      "passed": true,
+      "checks": {
+        "events": true,
+        "usage": true,
+        "deliveries": true,
+        "succeeded": true,
+        "attempts": true,
+        "receiverRequests": true,
+        "signedReceipts": true
+      }
+    },
+    {
+      "name": "burst-10-workers-3",
+      "workers": 3,
+      "model": "closed-loop burst",
+      "concurrency": 10,
+      "offered_rate_per_second": null,
+      "offered": 100,
+      "started": 100,
+      "dropped": 0,
+      "accepted": 100,
+      "unexpected_response_count": 0,
+      "unexpected_response_rate": 0,
+      "unique_response_ids": 100,
+      "status_counts": {
+        "202": 100
+      },
+      "acceptance_ms": {
+        "count": 100,
+        "min": 97.87,
+        "mean": 350.69,
+        "p50": 353.76,
+        "p95": 454.86,
+        "p99": 487.1,
+        "max": 487.4
+      },
+      "acceptance_elapsed_ms": 3686,
+      "observed_request_rate_per_second": 27.13,
+      "metrics": {
+        "events": 100,
+        "deliveries": 100,
+        "statuses": {
+          "succeeded": 100
+        },
+        "attempts": 100,
+        "receipts": 100,
+        "processed_receipts": 100,
+        "receiver_requests": 100,
+        "usage": 100,
+        "http_ms": {
+          "count": 100,
+          "min": 44,
+          "mean": 63.81,
+          "p50": 60,
+          "p95": 85,
+          "p99": 100,
+          "max": 105
+        },
+        "queue_ms": {
+          "count": 100,
+          "min": 0,
+          "mean": 490,
+          "p50": 0,
+          "p95": 1000,
+          "p99": 1000,
+          "max": 1000
+        },
+        "delivery_ms": {
+          "count": 100,
+          "min": 0,
+          "mean": 610,
+          "p50": 1000,
+          "p95": 1000,
+          "p99": 1000,
+          "max": 1000
+        }
+      },
+      "drain_after_requests_ms": 2882.141399999993,
+      "sampled_pending_max_after_requests": 2,
+      "delivery_rate_from_first_request_per_second": 15.22,
+      "last_response_offset_ms": 3686,
+      "limits": {
+        "owned_workspaces": 3,
+        "members": 10,
+        "projects": 3,
+        "endpoints": 5,
+        "sources": 3,
+        "api_keys": 5,
+        "events_daily": 100000,
+        "replays_daily": 100,
+        "ingest_per_minute": 60000,
+        "workspace_per_second": 1000,
+        "endpoint_per_second": 1000
+      },
+      "passed": true,
+      "checks": {
+        "events": true,
+        "usage": true,
+        "deliveries": true,
+        "succeeded": true,
+        "attempts": true,
+        "receiverRequests": true,
+        "signedReceipts": true
+      }
+    }
+  ],
+  "resources": [
+    {
+      "at": "2026-10-27T08:49:57.244Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 45.22,
+          "memory_bytes": 42456842
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 1.04,
+          "memory_bytes": 13316915
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 45.74,
+          "memory_bytes": 42572186
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 0,
+          "memory_bytes": 9928966
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 5.02,
+          "memory_bytes": 6910116
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.07,
+          "memory_bytes": 32673628
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 0.09,
+          "memory_bytes": 34068234
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:02.239Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 1.97,
+          "memory_bytes": 42572186
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 2.07,
+          "memory_bytes": 17500733
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 19.16,
+          "memory_bytes": 42446356
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 14.17,
+          "memory_bytes": 36930847
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 1.35,
+          "memory_bytes": 6758072
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.74,
+          "memory_bytes": 67297608
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 9.29,
+          "memory_bytes": 39604716
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:07.206Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 13.94,
+          "memory_bytes": 73998008
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 0.78,
+          "memory_bytes": 17972593
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 5.46,
+          "memory_bytes": 44711281
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 0.01,
+          "memory_bytes": 36658217
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 3.39,
+          "memory_bytes": 7110394
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.84,
+          "memory_bytes": 67947725
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 0.12,
+          "memory_bytes": 39038484
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:12.231Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 19.15,
+          "memory_bytes": 44428165
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 4.07,
+          "memory_bytes": 18444452
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 36.44,
+          "memory_bytes": 43610276
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 26.51,
+          "memory_bytes": 38304481
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 2.14,
+          "memory_bytes": 7683965
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.68,
+          "memory_bytes": 67685581
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 1.84,
+          "memory_bytes": 39048970
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:17.256Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 150.08,
+          "memory_bytes": 53687091
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 17.05,
+          "memory_bytes": 17553162
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 184.01,
+          "memory_bytes": 56644076
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 30.24,
+          "memory_bytes": 36773560
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 12.08,
+          "memory_bytes": 8891924
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.87,
+          "memory_bytes": 68209869
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 21.07,
+          "memory_bytes": 39374029
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:22.224Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 14.81,
+          "memory_bytes": 45078282
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 7.12,
+          "memory_bytes": 18549309
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 37.39,
+          "memory_bytes": 44019220
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 28.93,
+          "memory_bytes": 37937480
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 2.15,
+          "memory_bytes": 7729054
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.63,
+          "memory_bytes": 67696067
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 20.47,
+          "memory_bytes": 40223375
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:27.273Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 146.48,
+          "memory_bytes": 52491715
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 16.35,
+          "memory_bytes": 19482542
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 176.24,
+          "memory_bytes": 54253322
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 28.35,
+          "memory_bytes": 37371249
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 11.56,
+          "memory_bytes": 8356102
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.83,
+          "memory_bytes": 67968696
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 21.39,
+          "memory_bytes": 40139489
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:32.214Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 16.66,
+          "memory_bytes": 45571113
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 7.92,
+          "memory_bytes": 18947768
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 29.25,
+          "memory_bytes": 44533023
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 20.23,
+          "memory_bytes": 37989908
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 4.03,
+          "memory_bytes": 7466910
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 21.59,
+          "memory_bytes": 68042097
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 12.49,
+          "memory_bytes": 40254833
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:37.248Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 36.53,
+          "memory_bytes": 47133491
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 4.81,
+          "memory_bytes": 18675139
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 16.57,
+          "memory_bytes": 49230643
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 3.34,
+          "memory_bytes": 37402706
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 3.25,
+          "memory_bytes": 7217349
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 1.05,
+          "memory_bytes": 68042097
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 1.6,
+          "memory_bytes": 39625687
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:42.264Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 12.19,
+          "memory_bytes": 47542436
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 7.32,
+          "memory_bytes": 19503514
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 22.24,
+          "memory_bytes": 51453624
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 6.18,
+          "memory_bytes": 36888904
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 3.62,
+          "memory_bytes": 7623148
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.73,
+          "memory_bytes": 68084040
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 3.98,
+          "memory_bytes": 39615201
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:47.287Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 29.1,
+          "memory_bytes": 47301263
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 10.92,
+          "memory_bytes": 18779996
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 59.59,
+          "memory_bytes": 50121933
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 27.3,
+          "memory_bytes": 38178652
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 6.32,
+          "memory_bytes": 8032092
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.93,
+          "memory_bytes": 68084040
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 17.32,
+          "memory_bytes": 40684749
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:52.275Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 16.51,
+          "memory_bytes": 47112520
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 3.75,
+          "memory_bytes": 18423480
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 45.76,
+          "memory_bytes": 50059018
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 8.51,
+          "memory_bytes": 36647731
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 5.56,
+          "memory_bytes": 7241466
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.7,
+          "memory_bytes": 68566385
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 11.84,
+          "memory_bytes": 39615201
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:50:57.257Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 18.57,
+          "memory_bytes": 48140124
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 6.51,
+          "memory_bytes": 18423480
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 42.83,
+          "memory_bytes": 49534730
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 16.99,
+          "memory_bytes": 37979423
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 2.24,
+          "memory_bytes": 7958692
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.64,
+          "memory_bytes": 68314726
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 2.67,
+          "memory_bytes": 39384515
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:02.336Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 28.8,
+          "memory_bytes": 47133491
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 3.48,
+          "memory_bytes": 18738053
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 37.81,
+          "memory_bytes": 50667192
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 4.79,
+          "memory_bytes": 37968937
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 10.96,
+          "memory_bytes": 7623148
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 32.31,
+          "memory_bytes": 68398612
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 13.63,
+          "memory_bytes": 39415972
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:07.297Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 16.76,
+          "memory_bytes": 46881833
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 4.67,
+          "memory_bytes": 19167969
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 19.25,
+          "memory_bytes": 48779756
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 1.89,
+          "memory_bytes": 36658217
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 1.1,
+          "memory_bytes": 7675576
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.68,
+          "memory_bytes": 68398612
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 0.57,
+          "memory_bytes": 39153828
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:12.278Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 13.54,
+          "memory_bytes": 47416607
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 4.77,
+          "memory_bytes": 17993564
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 41.18,
+          "memory_bytes": 52051313
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 14.48,
+          "memory_bytes": 37402706
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 5.7,
+          "memory_bytes": 11565793
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.71,
+          "memory_bytes": 68146954
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 3.01,
+          "memory_bytes": 39678116
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:17.279Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 13.43,
+          "memory_bytes": 46619689
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 3.55,
+          "memory_bytes": 18475909
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 30.45,
+          "memory_bytes": 52764344
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 12.56,
+          "memory_bytes": 38220595
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 4.88,
+          "memory_bytes": 9838789
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.69,
+          "memory_bytes": 69310874
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 0.89,
+          "memory_bytes": 39940260
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:22.273Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 17.78,
+          "memory_bytes": 46871347
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 5.6,
+          "memory_bytes": 18297651
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 27.6,
+          "memory_bytes": 49482301
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 11.79,
+          "memory_bytes": 37402706
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 1.62,
+          "memory_bytes": 10060038
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.68,
+          "memory_bytes": 69573018
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 1.77,
+          "memory_bytes": 39667630
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:27.281Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 14.72,
+          "memory_bytes": 46860861
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 2.32,
+          "memory_bytes": 17752392
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 22.98,
+          "memory_bytes": 50331648
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 6.13,
+          "memory_bytes": 37413192
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 3.95,
+          "memory_bytes": 9211740
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 18.68,
+          "memory_bytes": 70453821
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 3.68,
+          "memory_bytes": 39625687
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:32.292Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 12.96,
+          "memory_bytes": 47804580
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 3.76,
+          "memory_bytes": 18444452
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 16.34,
+          "memory_bytes": 52995031
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 1.42,
+          "memory_bytes": 36920361
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 0.92,
+          "memory_bytes": 9576645
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 0.65,
+          "memory_bytes": 69562532
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 8.8,
+          "memory_bytes": 40129004
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:37.270Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 1.1,
+          "memory_bytes": 45896172
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 0.12,
+          "memory_bytes": 17322476
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 0.69,
+          "memory_bytes": 49471816
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 0.01,
+          "memory_bytes": 36637245
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 6.12,
+          "memory_bytes": 9851372
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 1.2,
+          "memory_bytes": 69835162
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 6.99,
+          "memory_bytes": 40516977
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:42.332Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 134.84,
+          "memory_bytes": 50048532
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 18.68,
+          "memory_bytes": 19860029
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 204.58,
+          "memory_bytes": 64466452
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 61,
+          "memory_bytes": 40653292
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 8.88,
+          "memory_bytes": 10643046
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 2.81,
+          "memory_bytes": 69929533
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 19.08,
+          "memory_bytes": 39426458
+        },
+        {
+          "name": "hookdesk-load-worker-2",
+          "cpu_percent": 22.08,
+          "memory_bytes": 38912655
+        },
+        {
+          "name": "hookdesk-load-worker-3",
+          "cpu_percent": 0.13,
+          "memory_bytes": 33596375
+        }
+      ]
+    },
+    {
+      "at": "2026-10-27T08:51:47.315Z",
+      "containers": [
+        {
+          "name": "hookdesk-load-app-1",
+          "cpu_percent": 28.14,
+          "memory_bytes": 75119985
+        },
+        {
+          "name": "hookdesk-load-gateway-1",
+          "cpu_percent": 0,
+          "memory_bytes": 18979226
+        },
+        {
+          "name": "hookdesk-load-postgres-1",
+          "cpu_percent": 3.23,
+          "memory_bytes": 55008297
+        },
+        {
+          "name": "hookdesk-load-receiver-1",
+          "cpu_percent": 0.01,
+          "memory_bytes": 39174799
+        },
+        {
+          "name": "hookdesk-load-redis-1",
+          "cpu_percent": 3.08,
+          "memory_bytes": 10428088
+        },
+        {
+          "name": "hookdesk-load-scheduler-1",
+          "cpu_percent": 6.87,
+          "memory_bytes": 70076334
+        },
+        {
+          "name": "hookdesk-load-worker-1",
+          "cpu_percent": 0.11,
+          "memory_bytes": 39415972
+        },
+        {
+          "name": "hookdesk-load-worker-2",
+          "cpu_percent": 0.15,
+          "memory_bytes": 39143342
+        },
+        {
+          "name": "hookdesk-load-worker-3",
+          "cpu_percent": 0.18,
+          "memory_bytes": 39038484
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "measurement": {
+    "api_clock": "client monotonic performance.now()",
+    "percentiles": "nearest rank",
+    "database_time_resolution_ms": 1000,
+    "receiver": "internal Caddy + PHP-FPM, actual HMAC verification and PostgreSQL receipt",
+    "payload_padding_bytes": 1024,
+    "resource_sampling_seconds": 5,
+    "acceptance_p95_budget_ms": 5000,
+    "drain_timeout_seconds": 180
+  },
+  "passed": true,
+  "finished_at": "2026-10-27T08:51:50.113Z"
+}

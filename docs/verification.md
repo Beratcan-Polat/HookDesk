@@ -40,6 +40,16 @@ The [smoke script](../infra/scripts/smoke.mjs) reproduces these HTTP checks. The
 - **Frontend:** 15 Vitest tests passed. New cases cover English/Turkish replay results, selection across pages, the 100-record cap, typed limit input and verified ownership candidates.
 - **Browser coverage:** the suite now includes two additional English/Turkish panel journeys against generated, isolated fixtures. Current run results remain available in GitHub Actions.
 
+## Authentication and team checks — 23 October 2026
+
+The [CI run](https://github.com/Beratcan-Polat/HookDesk/actions/runs/39921378051) passed all four jobs. Frontend coverage increased to 19 tests and browser coverage to 12 journeys. English/Turkish journeys now cover actual queued invitation emails, mismatched/expired/reused invitation rejection, Viewer permissions, 2FA enrollment, authenticator and single-use recovery login, and support-session expiry with stale-request rejection. The administrator's own session remains intact after support ends.
+
+## Load baseline — 27 October 2026
+
+I added a separate Docker load-test stack and ran the full baseline. All 661 routed events reached the signature-verifying receiver exactly once; default-limit and concurrent-idempotency accounting passed. A 60-second workload offered five requests/second and completed all 300 events. The one-worker concurrency-10 case recorded API p95 357.64 ms and total delivery p95 5 seconds; the three-worker case recorded API p95 454.86 ms and delivery p95 1 second.
+
+The [baseline record](performance/2026-10-27.md) includes the raw JSON, HTML report, environment details and measurement limits. These local observations do not certify production throughput or replace a longer soak test. The CI workflow also includes a smaller isolated load-test profile.
+
 ## Release checks
 
 Production validation includes live email delivery, HTTPS, host egress rules, worker recovery, off-site backups, restore tests and monitoring. These checks are tracked in the [release checklist](runbooks/smoke-check.md) and [deployment guide](runbooks/deployment.md).
