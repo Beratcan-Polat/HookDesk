@@ -1,0 +1,101 @@
+name: hookdesk-load
+x-runtime: &runtime
+  image: hookdesk-load:local
+  build:
+    context: ../..
+    dockerfile: infra/docker/backend.Dockerfile
+    target: base
+  environment: &environment
+    APP_ENV: testing
+    APP_DEBUG: 'false'
+    APP_KEY: base64:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+    APP_URL: http://localhost:8081
+    HOOKDESK_LOAD_TEST: 'true'
+    DB_CONNECTION: pgsql
+    DB_HOST: postgres
+    DB_PORT: 5432
+    DB_DATABASE: hookdesk_load
+    DB_USERNAME: hookdesk_load
+    DB_PASSWORD: isolated_load_database
+    QUEUE_CONNECTION: redis
+    CACHE_STORE: redis
+    SESSION_DRIVER: database
+    REDIS_CLIENT: predis
+    REDIS_HOST: redis
+    MAIL_MAILER: array
+    RECEIVER_URL: http://gateway:8082
+    LOG_CHANNEL: stderr
+    LOG_LEVEL: warning
+  networks: [load]
+  depends_on:
+    postgres: { condition: service_healthy }
+    redis: { condition: service_healthy }
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: hookdesk_load
+      POSTGRES_USER: hookdesk_load
+      POSTGRES_PASSWORD: isolated_load_database
+    volumes: [database:/var/lib/postgresql]
+    mem_limit: 384m
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U hookdesk_load -d hookdesk_load']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [load]
+  redis:
+    image: redis:8-alpine
+    command: redis-server --appendonly yes --maxmemory-policy noeviction
+    volumes: [cache:/data]
+    mem_limit: 128m
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [load]
+  app:
+    <<: *runtime
+    mem_limit: 512m
+  receiver:
+    <<: *runtime
+    environment:
+      <<: *environment
+      APP_ROLE: receiver
+    mem_limit: 256m
+  gateway:
+    image: caddy:2-alpine
+    ports: ['127.0.0.1:8081:80']
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../../backend/public:/srv/backend/public:ro
+    mem_limit: 64m
+    depends_on:
+      app: { condition: service_started }
+      receiver: { condition: service_started }
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1/api/ready']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [load, outbound]
+  worker:
+    <<: *runtime
+    command: php artisan queue:work redis --queue=deliveries,default --timeout=20 --tries=1 --sleep=1
+    mem_limit: 192m
+    depends_on:
+      gateway: { condition: service_healthy }
+  scheduler:
+    <<: *runtime
+    command: php artisan schedule:work
+    mem_limit: 128m
+    depends_on:
+      gateway: { condition: service_healthy }
+networks:
+  load: { internal: true }
+  outbound: {}
+volumes:
+  database: {}
+  cache: {}

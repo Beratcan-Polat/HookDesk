@@ -1,0 +1,20 @@
+{
+	admin off
+	auto_https off
+}
+:80 {
+	@api path /api/* /up
+	handle @api {
+		root * /srv/backend/public
+		php_fastcgi app:9000
+	}
+	respond 404
+}
+:8082 {
+	@receiver path /receive/*
+	handle @receiver {
+		root * /srv/backend/public
+		php_fastcgi receiver:9000
+	}
+	respond 404
+}
