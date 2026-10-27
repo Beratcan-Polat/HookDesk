@@ -133,6 +133,8 @@ npm run build
 
 PostgreSQL and Redis integration tests require isolated test databases. Playwright journeys require the application services to be running. Environment variables and commands are in the [testing guide](docs/runbooks/testing.md); recorded results are in the [validation notes](docs/verification.md).
 
+I added a separate Docker load-test harness for acceptance latency, queue/delivery times and worker scaling. Run `node infra/performance/run.mjs` from the repository root. It creates an isolated stack and saves JSON/HTML reports. The [performance guide](docs/runbooks/performance.md) explains the workload and measurement limits.
+
 ## Documentation
 
 - [Architecture and delivery model](docs/architecture/overview.md)

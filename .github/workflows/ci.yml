@@ -63,6 +63,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run test
+      - run: node --test ../infra/performance/metrics.test.mjs
       - run: npm run build
   containers:
     runs-on: ubuntu-latest
@@ -89,6 +90,27 @@ jobs:
       - name: Stop the isolated CI stack
         if: always()
         run: docker compose down --volumes --remove-orphans
+  performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify isolated load-test configuration
+        run: docker compose -p hookdesk-load -f infra/performance/compose.yaml config --quiet
+      - name: Exercise load-test correctness and generate a report
+        run: node infra/performance/run.mjs --smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-smoke-report
+          path: .runtime/performance/**/report.*
+          if-no-files-found: warn
+      - name: Stop the isolated load stack
+        if: always()
+        run: docker compose -p hookdesk-load -f infra/performance/compose.yaml down --volumes --remove-orphans
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 20

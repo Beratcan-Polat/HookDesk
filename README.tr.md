@@ -133,6 +133,8 @@ npm run build
 
 PostgreSQL ve Redis entegrasyon testleri ayrı test veritabanlarıyla çalıştırılmalıdır. Playwright senaryoları çalışan uygulama servislerini gerektirir. Ortam değişkenleri ve komutlar [test rehberinde](docs/runbooks/testing.md), mevcut sonuçlar [doğrulama notlarında](docs/verification.md) yer alıyor.
 
+Kabul yanıt süresini, kuyruk/teslimat sürelerini ve worker sayısının etkisini ölçmek için ayrı bir Docker yük testi ekledim. Proje kökünde `node infra/performance/run.mjs` komutuyla çalışır; izole test ortamı oluşturup JSON/HTML raporlarını kaydeder. Senaryoları ve ölçüm sınırlarını [performans rehberinde](docs/runbooks/performance.md) açıkladım.
+
 ## Dokümantasyon
 
 - [Mimari ve teslimat modeli](docs/architecture/overview.md)

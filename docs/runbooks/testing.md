@@ -90,6 +90,10 @@ node infra/scripts/smoke.mjs
 
 This verifies SMTP through Mailpit, signed email verification, cookie/CSRF authentication, API keys, idempotency, actual webhook retries, receiver deduplication and incoming sources. `--recovery` also stops the worker and restarts Redis before verifying a queued delivery. Run that mode on a dedicated development stack. See the [Docker development guide](docker-development.md) for setup, cleanup and diagnostics.
 
+## Load tests
+
+Run `node infra/performance/run.mjs` from the repository root for an isolated Docker baseline, or add `--smoke` for the smaller CI workload. It measures API latency, queue/delivery times, real signed receipt counts and Docker resource samples. The [performance guide](performance.md) documents workload sizes, limit overrides, cleanup and measurement precision.
+
 ## CI
 
 [GitHub Actions](../../.github/workflows/ci.yml) runs backend checks with PostgreSQL and Redis, frontend checks, container builds, the complete Docker smoke/recovery flow and browser journeys. Run results are available in the repository's [Actions tab](https://github.com/Beratcan-Polat/HookDesk/actions).
