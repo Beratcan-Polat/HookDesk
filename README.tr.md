@@ -117,6 +117,12 @@ Olay kabulü için `POST /api/v1/events` kullanılır. İstek, proje API anahtar
 
 İsteğe bağlı `Idempotency-Key` başlığı 24 saat boyunca aynı ham istek gövdesini aynı olayla eşleştirir. İmza doğrulaması ve olay tekilleştirme için [örnek alıcıyı](examples/receiver.php), tüm uçlar için [OpenAPI sözleşmesini](docs/api/openapi.json) ekledim.
 
+## Araç kiralama entegrasyonu
+
+HookDesk'i araç kiralama projemde rezervasyon onayları için kullandım. Java uygulaması rezervasyonu ve gönderilecek olayı aynı MySQL transaction'ında kaydediyor; HookDesk `rental.created` olayını kabul edip imzalı olarak Python e-posta servisine teslim ediyor.
+
+Normal teslimatı, e-posta alıcısının kesilmesini ve HookDesk kapalıyken olayın Java tarafında bekleyip daha sonra gönderilmesini ayrı Docker ortamında test ettim. Üç senaryo da yerelde ve GitHub Actions'ta geçti. Araç kiralamanın ana sürümünü koruyup entegrasyonu [ayrı dalda](https://github.com/Beratcan-Polat/arac-kiralama/tree/feature/hookdesk-integration) tuttum. Kurulum ve kullanım adımları [entegrasyon rehberinde](https://github.com/Beratcan-Polat/arac-kiralama/blob/feature/hookdesk-integration/docs/hookdesk-integration.md), kısa gösterim akışı [demo belgesinde](docs/portfolio-demo.md#reservation-integration).
+
 ## Testler
 
 ```sh

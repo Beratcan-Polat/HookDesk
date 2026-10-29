@@ -50,6 +50,14 @@ I added a separate Docker load-test stack and ran the full baseline. All 661 rou
 
 The [baseline record](performance/2026-10-27.md) includes the raw JSON, HTML report, environment details and measurement limits. These local observations do not certify production throughput or replace a longer soak test. The CI workflow also includes a smaller isolated load-test profile.
 
+## Vehicle rental integration — 29 October 2026
+
+I connected the Java rental application's durable outbox to HookDesk and a signature-verifying Python mail receiver. The isolated Docker demo passed three scenarios locally: normal reservation confirmation, delivery after a receiver outage, and acceptance/delivery after HookDesk recovered while the producer retained the event. The successful run created three additional Mailpit emails; the receiver-outage delivery succeeded on its second attempt.
+
+The rental integration's [CI run](https://github.com/Beratcan-Polat/arac-kiralama/actions/runs/40829832436) passed Java, Python and Docker integration jobs at commit `e5d6ab0`. The suites include 17 Java tests and 38 Python tests. The [recorded smoke result](https://github.com/Beratcan-Polat/arac-kiralama/blob/e5d6ab0071ccd55e47955c661ca70a8d58a4e4ea/docs/verification/2026-10-29-smoke.json) contains scenario results and event IDs, without payloads or credentials. I also verified the compiled frontend, CSRF-protected demo panel login and workspace access locally.
+
+The integration preserves the rental repository's `main` branch and runs with separate databases and ports. It does not change HookDesk's public target validation or verify production HTTPS/SMTP. The [demo guide](portfolio-demo.md#reservation-integration) describes how to reproduce the flow.
+
 ## Release checks
 
 Production validation includes live email delivery, HTTPS, host egress rules, worker recovery, off-site backups, restore tests and monitoring. These checks are tracked in the [release checklist](runbooks/smoke-check.md) and [deployment guide](runbooks/deployment.md).

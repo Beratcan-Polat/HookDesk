@@ -117,6 +117,12 @@ Publish events through `POST /api/v1/events`, using a project API key in the `Au
 
 The optional `Idempotency-Key` header maps an identical raw request body to the same event for 24 hours. I included an [example receiver](examples/receiver.php) for signature verification and deduplication, and an [OpenAPI contract](docs/api/openapi.json) for the API routes.
 
+## Vehicle rental integration
+
+I connected HookDesk to reservation confirmations in my vehicle rental project. The Java application saves the reservation and its outbound event in one MySQL transaction. HookDesk accepts `rental.created` and delivers the signed event to the Python email service.
+
+I tested normal delivery, a receiver outage and recovery of events queued in Java while HookDesk was unavailable, using a separate Docker stack. All three scenarios passed locally and in GitHub Actions. The integration lives on a [separate branch](https://github.com/Beratcan-Polat/arac-kiralama/tree/feature/hookdesk-integration), preserving the rental project's main version. The [integration guide](https://github.com/Beratcan-Polat/arac-kiralama/blob/feature/hookdesk-integration/docs/hookdesk-integration.md) covers setup and usage; the [demo guide](docs/portfolio-demo.md#reservation-integration) provides a short walkthrough.
+
 ## Tests
 
 ```sh
