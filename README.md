@@ -6,6 +6,14 @@ HookDesk'i, uygulamalar arasında webhook ile taşınan olayların teslimatını
 
 Backend'i Laravel 13, arayüzü React 19 ve TypeScript ile ayrı uygulamalar olarak kurdum. Olayları ve teslimat durumlarını PostgreSQL'de saklıyorum; Redis'i kuyruk, önbellek ve hız sınırları için kullanıyorum.
 
+## Kısa demo
+
+[2:40 demo videosu](docs/demo/hookdesk-demo.mp4)
+
+Video, rezervasyon oluşturma, alıcı kesintisi ve otomatik yeniden deneme akışını yerel Docker ortamında gösterir. Türkçe altyazılıdır; bekleme süreleri kısaltılmıştır.
+
+[![HookDesk'te aynı teslimatın başarısız ilk denemesi ve HTTP 200 ile tamamlanan ikinci denemesi](docs/demo/delivery-history.jpg)](docs/demo/hookdesk-demo.mp4)
+
 ## Özellikler
 
 - E-posta doğrulama, şifre sıfırlama ve normal kullanıcılar için isteğe bağlı iki aşamalı doğrulama.

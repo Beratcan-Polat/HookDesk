@@ -6,6 +6,14 @@ I built HookDesk to manage webhook delivery between applications and make each d
 
 I separated the Laravel 13 backend from the React 19 and TypeScript frontend. PostgreSQL stores events and delivery state; Redis handles queueing, caching and rate limits.
 
+## Short demo
+
+[2:40 demo video](docs/demo/hookdesk-demo.mp4)
+
+The video demonstrates reservation creation, a receiver outage and automatic retries in the local Docker environment. It includes Turkish captions and shortened waiting periods.
+
+[![The same HookDesk delivery shows a failed first attempt followed by a successful HTTP 200 attempt](docs/demo/delivery-history.jpg)](docs/demo/hookdesk-demo.mp4)
+
 ## Features
 
 - Email verification, password recovery and optional two-factor authentication for regular users.
