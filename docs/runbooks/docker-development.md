@@ -70,3 +70,17 @@ docker compose logs --tail 100 app worker scheduler receiver gateway
 An exited frontend container usually needs its first npm error inspected. `npm ci` requires the committed lock file to match `package.json`; running `npm install` with a different npm version can rewrite bundled optional dependency records. Keep lock-file changes intentional and verify a clean install before committing them.
 
 If an image or locked dependency changes, rerun setup to rebuild the image and refresh the dependency volume. Do not remove database volumes to resolve a dependency installation problem.
+
+## Scheduler recovery after an interrupted shutdown
+
+Delivery recovery runs every five seconds. Its overlap lock expires after one minute so a killed scheduler cannot leave recovery locked for Laravel's default 24 hours. Database delivery leases still prevent duplicate ownership if an unusually slow dispatcher overlaps a later run.
+
+When upgrading an existing development stack that already holds the old lock, stop the scheduler, clear its scheduling locks and start it again:
+
+```sh
+docker compose stop scheduler
+docker compose exec app php artisan schedule:clear-cache
+docker compose up -d scheduler
+```
+
+Check the scheduler heartbeat in the platform health screen and inspect `docker compose logs --tail 30 scheduler`. `tests/Unit/SchedulerRecoveryTest.php` verifies that an abandoned delivery-dispatch lock can be acquired again after 61 seconds.

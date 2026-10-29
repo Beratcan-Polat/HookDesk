@@ -66,6 +66,12 @@ The updated backend suite passed 62 tests with 210 assertions on isolated Postgr
 
 I enlarged interface text and form controls, retained the existing palette, and replaced arrow-only actions with text labels. The sign-in screen was checked at a 390-pixel viewport with no horizontal overflow. Current browser results are recorded in GitHub Actions.
 
+## Scheduler recovery — 29 October 2026
+
+An interrupted Docker shutdown left a stale scheduler overlap lock that could prevent delivery recovery for Laravel's default 24 hours. The dispatch lock now expires after one minute. A regression test acquires the scheduled event's mutex, simulates an abandoned process and verifies acquisition after 61 seconds. Existing development locks were cleared with the scheduler stopped/restarted.
+
+The backend suite passed 63 tests and 214 assertions on an isolated PostgreSQL database and Redis databases 14/15. Pint and Larastan passed.
+
 ## Release checks
 
 Production validation includes live email delivery, HTTPS, host egress rules, worker recovery, off-site backups, restore tests and monitoring. These checks are tracked in the [release checklist](runbooks/smoke-check.md) and [deployment guide](runbooks/deployment.md).
