@@ -18,7 +18,7 @@ I use unit, integration and browser tests to check event delivery and authorizat
 
 All four jobs passed in the [22 October CI run](https://github.com/Beratcan-Polat/HookDesk/actions/runs/39741115210): backend, frontend, container builds and browser journeys. This followed a fix to service health-check argument quoting, which had stopped the browser job during initialization in the initial run.
 
-Current results are available in [GitHub Actions](https://github.com/Beratcan-Polat/HookDesk/actions). Commands and environment setup are documented in the [testing guide](runbooks/testing.md).
+Current results are available in [GitHub Actions](https://github.com/Beratcan-Polat/HookDesk/actions). Commands and environment setup are documented in the [testing guide](runbooks/testing.en.md).
 
 ## Docker validation — 22 October 2026
 

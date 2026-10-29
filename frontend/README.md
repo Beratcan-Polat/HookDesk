@@ -31,4 +31,4 @@ npm run build
 npm run test:e2e
 ```
 
-Browser tests require running API/frontend services and test accounts. Details are in the [testing guide](../docs/runbooks/testing.md). See the [project README](../README.md) for Docker setup and the [OpenAPI contract](../docs/api/openapi.json) for API routes.
+Browser tests require running API/frontend services and test accounts. Details are in the [testing guide](../docs/runbooks/testing.en.md). See the [project README](../README.md) for Docker setup and the [OpenAPI contract](../docs/api/openapi.json) for API routes.

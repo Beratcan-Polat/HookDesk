@@ -1,6 +1,6 @@
 # HookDesk
 
-**English** · [Türkçe](README.md) · [Architecture](docs/architecture/overview.md) · [API](docs/api/openapi.json) · [Testing](docs/runbooks/testing.md)
+**English** · [Türkçe](README.md) · [Architecture](docs/architecture/overview.en.md) · [API](docs/api/openapi.json) · [Testing](docs/runbooks/testing.en.md)
 
 I built HookDesk to manage webhook delivery between applications and make each delivery traceable. The starting point was a common failure: a destination goes offline, an event cannot be delivered, and there is no clear record of what happened or a way to retry it.
 
@@ -155,13 +155,13 @@ npm run test
 npm run build
 ```
 
-PostgreSQL and Redis integration tests require isolated test databases. Playwright journeys require the application services to be running. Environment variables and commands are in the [testing guide](docs/runbooks/testing.md); recorded results are in the [validation notes](docs/verification.md).
+PostgreSQL and Redis integration tests require isolated test databases. Playwright journeys require the application services to be running. Environment variables and commands are in the [testing guide](docs/runbooks/testing.en.md); recorded results are in the [validation notes](docs/verification.md).
 
 I added a separate Docker load-test harness for acceptance latency, queue/delivery times and worker scaling. Run `node infra/performance/run.mjs` from the repository root. It creates an isolated stack and saves JSON/HTML reports. The [performance guide](docs/runbooks/performance.md) explains the workload and measurement limits.
 
 ## Documentation
 
-- [Architecture and delivery model](docs/architecture/overview.md)
+- [Architecture and delivery model](docs/architecture/overview.en.md)
 - [Technical decisions](docs/decisions)
 - [API authentication](docs/api/authentication.md)
 - [End-to-end demo](docs/portfolio-demo.md)

@@ -11,7 +11,7 @@ I use an order event to demonstrate the delivery flow, including what happens wh
 7. Sign in as a Super Admin, confirm the password for sensitive access, and inspect a payload with a reason.
 8. Start support for one workspace, edit a destination and end the session. The audit entry retains both the administrator and the assisted user.
 
-The [architecture guide](architecture/overview.md) explains the database locks, delivery leases and recovery behavior behind this flow.
+The [architecture guide](architecture/overview.en.md) explains the database locks, delivery leases and recovery behavior behind this flow.
 
 ## Reservation integration
 

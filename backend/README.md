@@ -31,4 +31,4 @@ php vendor/bin/pint --test
 php vendor/bin/phpstan analyse --memory-limit=512M
 ```
 
-Database tests require an isolated database. Setup and integration-test configuration are covered in the [project README](../README.md) and [testing guide](../docs/runbooks/testing.md).
+Database tests require an isolated database. Setup and integration-test configuration are covered in the [project README](../README.md) and [testing guide](../docs/runbooks/testing.en.md).

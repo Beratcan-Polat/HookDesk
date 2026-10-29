@@ -1,10 +1,12 @@
-# Testing
+# Testler
 
-I focus the tests on workspace isolation, delivery recovery, duplicate requests and the boundary between administrator and support permissions.
+**Türkçe** · [English](testing.en.md) · [Proje](../../README.md)
 
-## Unit and feature tests
+Testler; çalışma alanı izolasyonunu, kesintiden sonra teslimatın devam etmesini, yinelenen istekleri ve yönetici ile destek oturumu yetkilerinin sınırlarını doğrular.
 
-From `backend`:
+## Birim ve özellik testleri
+
+`backend` klasöründe:
 
 ```sh
 php vendor/bin/pest
@@ -12,23 +14,23 @@ php vendor/bin/pint --test
 php vendor/bin/phpstan analyse --memory-limit=512M
 ```
 
-The default test profile uses SQLite in memory. PostgreSQL-specific cases are skipped in that profile. Database tests run migrations and remove test tables; always use a dedicated test database when overriding the default connection, including when running tests inside containers.
+Varsayılan test profili bellekte SQLite kullanır. PostgreSQL'e özel senaryolar bu profilde atlanır. Veritabanı testleri migration çalıştırır ve test tablolarını kaldırır. Varsayılan bağlantı değiştirildiğinde, konteyner içindeki çalıştırmalar dahil, mutlaka ayrı bir test veritabanı kullanılmalıdır.
 
-## PostgreSQL integration
+## PostgreSQL entegrasyonu
 
-Configure `DB_CONNECTION=pgsql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE=hookdesk_test`, `DB_USERNAME` and `DB_PASSWORD` in the test process. PHP must have `pdo_pgsql` enabled.
+Test sürecinde `DB_CONNECTION=pgsql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE=hookdesk_test`, `DB_USERNAME` ve `DB_PASSWORD` değişkenleri ayarlanır. PHP'de `pdo_pgsql` eklentisi etkin olmalıdır.
 
-The concurrency tests start four independent PHP processes with the same idempotency key, then check that only one event was accepted. A separate test races four workers to claim one delivery.
+Eşzamanlılık testleri, aynı idempotency anahtarıyla dört bağımsız PHP süreci başlatır ve tek olay kabul edildiğini doğrular. Başka bir testte dört worker aynı teslimatı sahiplenmeye çalışır; yalnızca biri başarılı olmalıdır.
 
-The HTTP integration test starts a receiver on an ephemeral loopback port. It checks real signed requests, transient failures, receiver deduplication and response-body truncation.
+HTTP entegrasyon testi, yerel ağ adresindeki geçici bir portta alıcı başlatır. Gerçek imzalı istekleri, geçici hatalardan sonra yeniden denemeyi, alıcıda tekilleştirmeyi ve yanıt gövdesinin boyut sınırında kesilmesini kontrol eder.
 
-## Redis integration
+## Redis entegrasyonu
 
-Set `RUN_REDIS_TESTS=true` to enable the queue round-trip test. Configure an isolated Redis instance or database through `REDIS_HOST`, `REDIS_PORT` and `REDIS_DB`; do not share it with application data.
+Gerçek kuyruğa iş bırakma ve işleme testini açmak için `RUN_REDIS_TESTS=true` kullanılır. `REDIS_HOST`, `REDIS_PORT` ve `REDIS_DB` ile ayrı bir Redis sunucusu veya veritabanı seçilir. Uygulamanın kullandığı Redis verileri test ortamıyla paylaşılmaz.
 
-## Frontend
+## Frontend kontrolleri
 
-From `frontend`:
+`frontend` klasöründe:
 
 ```sh
 npm ci
@@ -37,63 +39,67 @@ npm run test
 npm run build
 ```
 
-## Browser journeys
+## Tarayıcı testleri
 
-Start the API, receiver, worker, scheduler and frontend against a dedicated browser-test database. Set `E2E_EMAIL` and `E2E_PASSWORD` for a verified test account. `hookdesk:demo` creates the sample user and workspace used by the test fixtures.
+API, alıcı, worker, zamanlayıcı ve frontend; tarayıcı testlerine ayrılmış veritabanıyla başlatılır. E-postası doğrulanmış test hesabı için `E2E_EMAIL` ve `E2E_PASSWORD` ayarlanır. `hookdesk:demo`, testlerin kullandığı örnek kullanıcıyı ve çalışma alanını oluşturur.
 
-Create the administrator fixture from `backend`:
+Yönetici test verisini hazırlamak için `backend` klasöründe:
 
 ```sh
 php tests/Support/seed-browser.php
 ```
 
-Save its JSON output to a Git-ignored file and set `E2E_ADMIN_FILE` to that file's absolute path. The output contains generated credentials and a TOTP secret. The fixture helper is disabled in production.
+JSON çıktısı Git'in yok saydığı bir dosyaya kaydedilir; `E2E_ADMIN_FILE` değişkenine dosyanın mutlak yolu verilir. Çıktı, oluşturulan hesap bilgilerini ve TOTP test sırrını içerir. Bu sır, Süper Admin girişinde doğrulama kodu gerektirmez; mevcut bir Authenticator kurulumu olan yönetici hesabının da parolayla girebildiği test edilir. Yardımcı betik üretim ortamında çalışmaz.
 
-The helper refreshes the test administrator's credentials and creates separate English and Turkish workspaces, verified/unverified members and synthetic terminal deliveries for panel tests. These workspaces are used for real ownership transfers and limit changes; keep this data in the browser-test database.
+Betik, test yöneticisinin giriş bilgilerini yeniler; Türkçe ve İngilizce senaryolar için ayrı çalışma alanları, doğrulanmış/doğrulanmamış üyeler ve terminal durumdaki örnek teslimatlar oluşturur. Panel testleri bu verilerle gerçek sahiplik aktarımı ve limit değişikliği yapar. Bu nedenle hazırlık yalnızca tarayıcı test veritabanında çalıştırılır.
 
-For invitation, enrollment and support-lifecycle tests, use `APP_ENV=testing` and a database named `hookdesk_browser` (or `hookdesk_browser_<suffix>`). Create the additional fixtures from `backend` and save the output privately:
+Davet, 2FA kurulumu ve destek oturumu yaşam döngüsü testleri için `APP_ENV=testing` ve `hookdesk_browser` veya `hookdesk_browser_<suffix>` adlı veritabanı gerekir. Ek test verileri `backend` klasöründen hazırlanır ve çıktısı paylaşılmadan saklanır:
 
 ```sh
 php tests/Support/seed-lifecycle.php > ../.runtime/browser-lifecycle.json
 ```
 
-Set `E2E_LIFECYCLE_FILE` to that JSON file's absolute path. Each language gets separate owners, invitees and users without 2FA. Configure the worker to send SMTP to Mailpit and set `E2E_MAILPIT_URL` to its HTTP API, defaulting to `http://localhost:8025`. Invitation tests follow the actual queued email link; they do not fabricate notification responses.
+`E2E_LIFECYCLE_FILE` değişkeni bu JSON dosyasının mutlak yoluna ayarlanır. Her dil için ayrı sahipler, davet edilen kullanıcılar ve 2FA kurulumu bulunmayan kullanıcılar oluşturulur. Worker'ın SMTP gönderimi Mailpit'e yönlendirilir. `E2E_MAILPIT_URL`, Mailpit HTTP API adresidir; varsayılanı `http://localhost:8025` olur. Davet testleri kuyruktan gönderilen gerçek e-postadaki bağlantıyı izler.
 
-The CLI-only `control-browser.php` helper reads the enrollment secret and expires a support record belonging to these fixtures. Both environment and database-name checks run before access, and the record must match the private fixture file. No clock-control HTTP route is added to the application. Never run fixture setup against either development account database.
+Yalnızca komut satırından çalışan `control-browser.php`, test hesabının 2FA kurulum sırrını okur ve bu test verilerine ait destek oturumunu açıkça iptal eder. İşlemden önce ortam ve veritabanı adı kontrol edilir; oturumun özel test dosyasıyla eşleşmesi gerekir. Uygulamaya saat veya oturum durumunu değiştiren bir test HTTP ucu eklenmez. Hazırlık betikleri normal geliştirme hesaplarının bulunduğu veritabanlarında çalıştırılmaz.
 
-From `frontend`:
+`frontend` klasöründe:
 
 ```sh
 npx playwright install chromium
 npm run test:e2e
 ```
 
-The twelve journeys cover public navigation, English/Turkish text, mobile layout, login errors, password recovery, event publishing, password-only administrator login, password confirmation and writable support sessions. The panel journeys exercise bulk replay, limit overrides, restoration of inherited defaults and ownership transfer to a verified member. Administrator login and step-up helpers assert that no authenticator code is requested.
+Yedi dosyada 14 tarayıcı senaryosu bulunur. Bunlar tanıtım ve belge sayfalarını, Türkçe/İngilizce metinleri, mobil düzeni, giriş hatalarını, parola kurtarmayı, olay yayımlamayı, yöneticinin yalnızca parolayla girişini, kritik işlem öncesi parola onayını ve işlem yapılabilen destek oturumlarını kapsar. Panel senaryoları toplu yeniden gönderimi, limit geçersiz kılmayı, varsayılan limitlere dönmeyi ve doğrulanmış üyeye sahiplik aktarımını doğrular. Yönetici giriş ve parola onayı yardımcıları Authenticator kodu istenmediğini de kontrol eder.
 
-Six additional journeys run in English and Turkish:
+Türkçe ve İngilizce olarak çalışan altı davet, 2FA ve destek senaryosu şunları doğrular:
 
-- Team invitations: queued SMTP, translated email, mismatched email rejection, expired and reused invitation rejection, successful acceptance and viewer write restrictions.
-- Two-factor authentication: QR enrollment, rejection of an invalid code, confirmation, recovery codes hidden after reload, authenticator login, recovery login, rejection of a consumed code and acceptance of a different code. These tests disable screenshots and traces for enrollment screens.
-- Support lifecycle: the server returns no expiry, permitted writes succeed, advancing the browser clock by two days leaves the session active, explicit revocation removes product controls, stale reads/writes return `403` and the real administrator remains signed in.
+- **Ekip davetleri:** kuyruk üzerinden SMTP gönderimi, e-posta dili, farklı e-postayla kabulün reddi, süresi dolmuş veya kullanılmış davetin reddi, başarılı kabul ve Viewer rolünün yazma kısıtları.
+- **İki aşamalı doğrulama:** QR ile kurulum, hatalı kodun reddi, kurulum onayı, yenileme sonrası kurtarma kodlarının gizlenmesi, Authenticator ve kurtarma koduyla giriş, kullanılan kurtarma kodunun tekrar reddedilmesi. Kurulum ekranlarında ekran görüntüsü ve trace kaydı kapatılır. Bu akış normal kullanıcılar içindir.
+- **Destek yaşam döngüsü:** sunucunun bitiş süresi döndürmemesi, izinli işlemlerin yapılması, tarayıcı saati iki gün ilerletildiğinde oturumun açık kalması, açık iptalle işlem kontrollerinin kaldırılması, eski okuma/yazma isteklerine `403` dönmesi ve yöneticinin kendi oturumunun korunması.
 
-The support tests advance the browser clock and revoke the matching isolated database record to verify both unlimited duration and server-side termination.
+Destek testleri, sınırsız süreyi ve sunucu tarafındaki sonlandırmayı ayrı ayrı doğrulamak için tarayıcı saatini ilerletir ve eşleşen test veritabanı kaydını iptal eder.
 
-Screenshots and failure traces are written to the ignored `test-results` and `playwright-report` directories.
+İki yerel adres senaryosu da `localhost` ve `127.0.0.1` üzerinden giriş, sayfa yenileme ve çıkışı kontrol eder. Her iki adres/port çifti `SANCTUM_STATEFUL_DOMAINS` içinde bulunmalıdır. `E2E_BASE_URL`, Playwright'ın varsayılan `http://localhost:5173` adresini değiştirmek için kullanılabilir.
 
-## Docker smoke test
+Ekran görüntüleri ve başarısız testlerin trace kayıtları, Git'in yok saydığı `test-results` ve `playwright-report` klasörlerine yazılır.
 
-After starting the development stack, run from the repository root with Node.js 24:
+## Docker uçtan uca kontrolü
+
+Geliştirme servisleri açıldıktan sonra proje kökünde Node.js 24 ile:
 
 ```sh
 node infra/scripts/smoke.mjs
 ```
 
-This verifies SMTP through Mailpit, signed email verification, cookie/CSRF authentication, API keys, idempotency, actual webhook retries, receiver deduplication and incoming sources. `--recovery` also stops the worker and restarts Redis before verifying a queued delivery. Run that mode on a dedicated development stack. See the [Docker development guide](docker-development.md) for setup, cleanup and diagnostics.
+Bu kontrol; Mailpit üzerinden SMTP'yi, imzalı e-posta doğrulama bağlantısını, çerez/CSRF oturumunu, API anahtarlarını, idempotency davranışını, gerçek webhook tekrarlarını, alıcıda tekilleştirmeyi ve gelen kaynakları doğrular.
 
-## Load tests
+`--recovery` seçeneği ayrıca worker'ı durdurur, Redis'i yeniden başlatır ve bekleyen teslimatın sonradan tamamlandığını kontrol eder. Bu seçenek ayrı bir geliştirme ortamında çalıştırılmalıdır. Kurulum, test sonrası temizlik ve hata inceleme adımları [Docker geliştirme rehberindedir](docker-development.md) (İngilizce).
 
-Run `node infra/performance/run.mjs` from the repository root for an isolated Docker baseline, or add `--smoke` for the smaller CI workload. It measures API latency, queue/delivery times, real signed receipt counts and Docker resource samples. The [performance guide](performance.md) documents workload sizes, limit overrides, cleanup and measurement precision.
+## Yük testleri
 
-## CI
+İzole Docker ortamında temel ölçümü çalıştırmak için proje kökünde `node infra/performance/run.mjs` kullanılır. Daha küçük CI senaryosu için `--smoke` eklenir. API yanıt süresi, kuyruk ve teslimat süreleri, gerçek imzalı alım sayıları ve Docker kaynak kullanımı ölçülür. Senaryo büyüklükleri, test limitleri, temizlik ve ölçüm hassasiyeti [performans rehberinde](performance.md) açıklanır (İngilizce).
 
-[GitHub Actions](../../.github/workflows/ci.yml) runs backend checks with PostgreSQL and Redis, frontend checks, container builds, the complete Docker smoke/recovery flow, browser journeys and an isolated load-test smoke profile. Run results are available in the repository's [Actions tab](https://github.com/Beratcan-Polat/HookDesk/actions).
+## Sürekli entegrasyon
+
+[GitHub Actions](../../.github/workflows/ci.yml); PostgreSQL ve Redis ile backend kontrollerini, frontend kontrollerini, konteyner derlemelerini, Docker uçtan uca/kurtarma akışını, tarayıcı senaryolarını ve izole yük testi kontrolünü çalıştırır. Çalışma sonuçları deponun [Actions sayfasından](https://github.com/Beratcan-Polat/HookDesk/actions) izlenebilir.

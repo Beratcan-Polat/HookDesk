@@ -1,34 +1,39 @@
-# Architecture
+# Mimari
 
-## Runtime
+**Türkçe** · [English](overview.en.md) · [Proje](../../README.md)
 
-React is an independent SPA. Caddy serves its production build and sends API/auth requests to Laravel PHP-FPM on the same origin. Browser sessions use Sanctum/Fortify cookies and CSRF. Project API keys use a separate middleware and never grant dashboard/admin access.
+## Çalışma düzeni
 
-PostgreSQL owns events, delivery state, attempts, leases, quotas and audit records. Redis carries jobs and shared cache counters. A scheduler reconstructs due jobs from PostgreSQL, recovers expired worker leases and applies retention.
+React arayüzü, Laravel API'sinden bağımsız bir SPA olarak çalışır. Üretimde Caddy, derlenmiş arayüzü sunar ve API ile kimlik doğrulama isteklerini aynı adres üzerinden Laravel PHP-FPM'e yönlendirir. Tarayıcı oturumlarında Sanctum/Fortify çerezleri ve CSRF koruması kullanılır. Proje API anahtarları ayrı bir middleware ile doğrulanır; kullanıcı paneline veya yönetim API'sine erişim sağlamaz.
 
-The receiver runs the same backend image with APP_ROLE=receiver, on an internal network without published ports. Arbitrary user endpoints cannot opt into its private-network exception.
+Olaylar, teslimat durumları, denemeler, işlem sahipliği, kullanım sayaçları ve işlem geçmişi PostgreSQL'de tutulur. Redis, kuyruk işleri ve paylaşılan önbellek sayaçları için kullanılır. Zamanlayıcı, zamanı gelen teslimatları PostgreSQL'den bulup kuyruğa alır, yarıda kalan işlemleri toparlar ve saklama kurallarını uygular.
 
-## Event processing
+Test alıcısı aynı backend imajını `APP_ROLE=receiver` ile çalıştırır. Yalnızca iç ağdan erişilir; dışarıya açılmış portu yoktur. Kullanıcının tanımladığı hedefler, bu sistem alıcısına ait özel ağ istisnasını kullanamaz.
 
-Acceptance locks the workspace row, checks account/project state and quota, resolves idempotency, and persists the immutable envelope and initial deliveries atomically. The response is independent of destination availability.
+## Olayın kabulü ve teslimatı
 
-Dispatch reserves queued_until for 60 seconds. A worker claims a due delivery with a row lock and a fresh lease token, persists a started attempt, then performs HTTP outside the transaction. Completion requires the same token and processing state.
+Kabul işlemi çalışma alanı satırını kilitler; hesap ve proje durumunu, kullanım limitini ve idempotency anahtarını kontrol eder. Değişmez olay gövdesi ve ilk teslimatlar aynı veritabanı transaction'ında kaydedilir. Hedef servisin erişilebilir olması kabul yanıtının ön koşulu değildir.
 
-A timeout or lost response can leave the destination having processed the event. Recovery records unknown, then follows the retry policy. This is at-least-once transport; receiver-side deduplication is necessary.
+Dağıtıcı, kuyruğa aldığı teslimatın `queued_until` alanını 60 saniye ilerletir. Worker, zamanı gelen teslimatı satır kilidi ve yeni bir sahiplik token'ıyla alır; başlayan denemeyi kaydeder. HTTP isteğini transaction dışında gönderir. Sonucun yazılması için sahiplik token'ının hâlâ aynı olması ve teslimatın `processing` durumunda bulunması gerekir.
 
-## Security boundaries
+Bir zaman aşımı veya kaybolan yanıt, alıcının olayı işleyip işlemediğini belirsiz bırakabilir. Kurtarma işlemi böyle bir denemeyi `unknown` olarak kaydeder ve yeniden deneme politikasını uygular. Teslimat modeli **en az bir kez** çalışır; alıcının olay kimliğine göre tekilleştirme yapması gerekir.
 
-- Platform role and workspace role are separate.
-- Workspace access always validates membership and resource ownership.
-- Super Admin uses dedicated APIs, verified email, recent password confirmation and reasons. Support sessions remain active until explicitly ended or revoked; they have no automatic expiry.
-- Support retains the actual actor and checks the target's current role for every operation.
-- Secrets are hashed or encrypted according to whether they must be recovered for delivery.
-- Privileged payloads are fetched separately with a reason and no-store response.
-- Native cURL pins validated DNS results. Streaming-handler fallbacks cannot bypass CURLOPT_RESOLVE.
-- Authentication cookies, authorization headers, source tokens and payloads are excluded from application audit metadata.
+## Yetki ve güvenlik sınırları
 
-## Data and indexes
+- Platform rolü ile çalışma alanı rolü birbirinden ayrıdır.
+- Çalışma alanına erişimde üyelik ve kaynağın ilgili çalışma alanına ait olması doğrulanır.
+- Süper Admin işlemleri ayrı API üzerinden yürür. Doğrulanmış e-posta, kritik işlemlerde güncel parola onayı ve işlem gerekçesi gerekir. Süper Admin girişinde Authenticator kodu istenmez.
+- Destek oturumlarının otomatik süre sınırı yoktur; elle sonlandırılana veya erişim iptal edilene kadar kullanılabilir.
+- Destek işlemlerinde gerçek yönetici kimliği korunur ve hedef kullanıcının güncel yetkileri her işlemde kontrol edilir.
+- API anahtarları ve kaynak token'ları özetlenerek saklanır. Teslimatta tekrar kullanılması gereken imza sırları şifrelenir.
+- Yönetici payload erişimi, gerekçe gerektiren ayrı bir istekle yapılır. Yanıt `no-store` ile tarayıcı önbelleğine alınmaz.
+- cURL bağlantısı, DNS kontrolünden geçen IP adresine `CURLOPT_RESOLVE` ile sabitlenir. Başka bir HTTP işleyicisine geçilerek bu kontrolün atlanmasına izin verilmez.
+- Kimlik doğrulama çerezleri, yetkilendirme başlıkları, kaynak token'ları ve payload içerikleri işlem geçmişinin metadata alanlarına kopyalanmaz.
 
-ULID primary keys, unique memberships, one owner per workspace, exact subscriptions, unique idempotency scope, unique delivery/attempt number and one active delivery per event/endpoint are enforced in migrations. Delivery scans index state and next_attempt_at. Event lists index project and creation time.
+## Veri modeli ve indeksler
 
-Immutable events are edited only for expiration of their idempotency lookup key; their body and data never change. Query-level retention removes whole event trees only after all deliveries become terminal.
+Birincil anahtarlar ULID biçimindedir. Migration'lar; üyeliklerin, idempotency kapsamının, hedef aboneliklerinin ve teslimat/deneme numarası çiftlerinin benzersizliğini korur. Her çalışma alanında tek sahip bulunur. Aynı olay ve hedef için tek aktif teslimat veritabanı seviyesinde korunur.
+
+Teslimat taramalarında durum ve `next_attempt_at`, olay listelerinde proje ve oluşturulma zamanı indekslerinden yararlanılır.
+
+Kabul edilen olayın gövdesi ve verisi değiştirilmez. Süresi dolan idempotency arama anahtarı temizlenebilir. Saklama işlemi, bir olayı bağlı teslimat ve deneme kayıtlarıyla birlikte ancak tüm teslimatlar terminal duruma geldikten sonra siler.
