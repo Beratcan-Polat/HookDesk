@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Webhook, ArrowLeft } from 'lucide-react'
+import { Webhook } from 'lucide-react'
 import { LanguageSwitch } from '@/features/auth/Auth'
 import { CopyText, JsonView } from '@/components/common'
 const content = {
@@ -57,7 +57,6 @@ export default function Docs() {
       </header>
       <main>
         <Link className="text-link" to="/app">
-          <ArrowLeft size={15} />
           {t('workspace')}
         </Link>
         <span className="eyebrow">QUICKSTART</span>

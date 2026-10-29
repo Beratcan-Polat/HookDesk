@@ -89,7 +89,7 @@ export async function signOut(page: Page, locale: Locale) {
   await expect(page).toHaveURL(/\/sign-in$/)
 }
 export function browserControl(
-  action: 'security-secret' | 'expire-support',
+  action: 'security-secret' | 'end-support',
   locale: Locale,
   session = '',
 ) {

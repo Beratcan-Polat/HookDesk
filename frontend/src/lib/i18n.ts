@@ -166,8 +166,8 @@ const phrases: Record<string, [string, string]> = {
     'Yeni bir doğrulama kodu kullan. Daha önce kullanılan kod tekrar kullanılamaz.',
   ],
   admin_access_denied: [
-    'Confirmed two-factor authentication and administrator access are required.',
-    'Yönetici yetkisi ve doğrulanmış iki aşamalı kimlik doğrulama gerekli.',
+    'A verified email address and administrator access are required.',
+    'Yönetici yetkisi ve doğrulanmış e-posta adresi gerekli.',
   ],
   project_blocked: ['This project is blocked.', 'Bu proje engellenmiş.'],
   account_suspended: ['This account is suspended.', 'Bu hesap askıya alınmış.'],
@@ -433,8 +433,8 @@ const phrases: Record<string, [string, string]> = {
   ],
   stepUp: ['Verify administrator access', 'Yönetici erişimini doğrula'],
   stepUpDescription: [
-    'Confirm your password and a current authenticator code. Sensitive changes remain unlocked for five minutes.',
-    'Parolanı ve güncel doğrulama kodunu gir. Hassas işlemler beş dakika boyunca açılır.',
+    'Confirm your password. Sensitive changes remain unlocked for five minutes.',
+    'Parolanı gir. Hassas işlemler beş dakika boyunca açılır.',
   ],
   stepUpRequired: [
     'Verify administrator access before changing sensitive settings.',
@@ -451,10 +451,17 @@ const phrases: Record<string, [string, string]> = {
   changeEmail: ['Request email change', 'E-posta değişikliği iste'],
   startSupport: ['Start support session', 'Destek oturumu başlat'],
   supportBand: ['Support session: acting on behalf of', 'Destek oturumu: adına işlem yapılıyor'],
+  untilEnded: ['Until you end it', 'Sen sonlandırana kadar'],
+  ended: ['Ended', 'Sonlandırıldı'],
+  support_session_ended: ['This support session has ended.', 'Bu destek oturumu sona ermiş.'],
+  admin_requires_verified_account: [
+    'An active account with verified email is required.',
+    'E-postası doğrulanmış etkin bir hesap gerekli.',
+  ],
   endSupport: ['End support', 'Desteği bitir'],
   supportDescription: [
-    'Choose a user and one workspace. All changes retain your administrator identity.',
-    'Bir kullanıcı ve çalışma alanı seç. Her işlemde yönetici kimliğin korunur.',
+    'Choose a user and one workspace. The session stays active until ended. All changes retain your administrator identity.',
+    'Bir kullanıcı ve çalışma alanı seç. Oturum sonlandırılana kadar açık kalır; her işlemde yönetici kimliğin korunur.',
   ],
   userId: ['User ID', 'Kullanıcı kimliği'],
   workspaceId: ['Workspace ID', 'Çalışma alanı kimliği'],

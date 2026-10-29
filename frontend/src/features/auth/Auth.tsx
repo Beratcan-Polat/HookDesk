@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Webhook, ArrowUpRight, ShieldCheck } from 'lucide-react'
+import { Webhook, ShieldCheck } from 'lucide-react'
 import { api, csrf, get, errorMessage } from '@/lib/api'
 import type { Envelope, User } from '@/lib/types'
 import { Button } from '@/components/ui/button'
@@ -169,10 +169,7 @@ export default function AuthPage() {
       <div className="auth-main">
         <div className="auth-top">
           <LanguageSwitch />
-          <Link to="/docs">
-            {t('docs')}
-            <ArrowUpRight size={14} />
-          </Link>
+          <Link to="/docs">{t('docs')}</Link>
         </div>
         <div className="auth-form">
           <h2>{t(title)}</h2>

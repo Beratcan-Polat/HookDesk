@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 import { signInAndStepUp } from './helpers/admin'
-test('administrator TOTP, step-up, audit and scoped writable support', async ({ page }) => {
+test('administrator password login, step-up, audit and scoped writable support', async ({
+  page,
+}) => {
   test.setTimeout(150000)
   test.skip(!process.env.E2E_ADMIN_FILE, 'Provide generated browser administrator credentials.')
   const account = await signInAndStepUp(page)

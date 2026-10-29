@@ -106,68 +106,68 @@ export default function SettingsPage() {
           ]}
         />
       </section>
-      <section className="security-panel">
-        <h2>{t('enable2fa')}</h2>
-        {user.two_factor_confirmed_at ? (
-          <>
-            <p>{t('twoFactorReady')}</p>
-            {user.platform_role !== 'super_admin' ? (
+      {user.platform_role !== 'super_admin' ? (
+        <section className="security-panel">
+          <h2>{t('enable2fa')}</h2>
+          {user.two_factor_confirmed_at ? (
+            <>
+              <p>{t('twoFactorReady')}</p>
               <MutationDialog
                 label="disable2fa"
                 method="delete"
                 url="/user/two-factor-authentication"
               />
-            ) : null}
-          </>
-        ) : (
-          <>
-            <p>{t('confirmPassword')}</p>
-            <div className="inline-controls">
-              <Input
-                aria-label={t('password')}
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+            </>
+          ) : (
+            <>
+              <p>{t('confirmPassword')}</p>
+              <div className="inline-controls">
+                <Input
+                  aria-label={t('password')}
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <Button onClick={() => void setup()}>{t('enable2fa')}</Button>
+              </div>
+            </>
+          )}
+          {error ? <Failure error={error} /> : null}
+          {qr ? (
+            <div className="qr-setup">
+              <p>{t('scanQr')}</p>
+              <img
+                width="200"
+                height="200"
+                alt={t('scanQr')}
+                src={'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(qr)}
               />
-              <Button onClick={() => void setup()}>{t('enable2fa')}</Button>
+              <div className="inline-controls">
+                <Input
+                  aria-label={t('code')}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                />
+                <Button onClick={() => void confirm()}>{t('confirm2fa')}</Button>
+              </div>
             </div>
-          </>
-        )}
-        {error ? <Failure error={error} /> : null}
-        {qr ? (
-          <div className="qr-setup">
-            <p>{t('scanQr')}</p>
-            <img
-              width="200"
-              height="200"
-              alt={t('scanQr')}
-              src={'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(qr)}
-            />
-            <div className="inline-controls">
-              <Input
-                aria-label={t('code')}
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
-              <Button onClick={() => void confirm()}>{t('confirm2fa')}</Button>
+          ) : null}
+          {codes.length ? (
+            <div>
+              <h3>{t('recoveryCodes')}</h3>
+              {codes.map((c) => (
+                <CopyText value={c} key={c} />
+              ))}
+              <Button variant="outline" onClick={() => setCodes([])}>
+                {t('close')}
+              </Button>
             </div>
-          </div>
-        ) : null}
-        {codes.length ? (
-          <div>
-            <h3>{t('recoveryCodes')}</h3>
-            {codes.map((c) => (
-              <CopyText value={c} key={c} />
-            ))}
-            <Button variant="outline" onClick={() => setCodes([])}>
-              {t('close')}
-            </Button>
-          </div>
-        ) : null}
-      </section>
+          ) : null}
+        </section>
+      ) : null}
       {workspace?.role === 'owner' ? (
         <section className="settings-section">
           <div>

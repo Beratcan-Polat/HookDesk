@@ -62,6 +62,8 @@
 }
 body {
   margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
   min-width: 320px;
 }
 button,
@@ -117,35 +119,35 @@ h1 {
   font-weight: 550;
 }
 h2 {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.25px;
 }
 h3 {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 550;
 }
 p {
   line-height: 1.7;
 }
 small {
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.6;
   color: var(--text-muted);
 }
 code,
 .mono {
   font-family: 'JetBrains Mono Variable', monospace;
-  font-size: 12px;
+  font-size: 14px;
 }
 select {
-  height: 36px;
+  height: 40px;
   padding: 0 30px 0 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: #fff;
   color: var(--foreground);
-  font-size: 13px;
+  font-size: 15px;
   max-width: 100%;
 }
 textarea {
@@ -154,7 +156,7 @@ textarea {
   border: 1px solid var(--input-border);
   border-radius: 6px;
   background: #fff;
-  font-size: 14px;
+  font-size: 16px;
   resize: vertical;
 }
 input {
@@ -179,7 +181,7 @@ form {
   color: var(--accent-ink);
   letter-spacing: 2px;
   font-family: 'JetBrains Mono Variable', monospace;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
 }
 .muted {
@@ -189,7 +191,7 @@ form {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
 }
 .language-switch {
@@ -203,7 +205,7 @@ form {
   background: transparent;
   border: 0;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   padding: 4px 7px;
   border-radius: 3px;
@@ -219,7 +221,7 @@ form {
   justify-content: center;
   gap: 12px;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 15px;
 }
 .spin {
   animation: spin 1.1s linear infinite;
@@ -235,7 +237,7 @@ form {
   color: #933a34;
   padding: 15px 18px;
   border-radius: 7px;
-  font-size: 13px;
+  font-size: 15px;
   margin: 12px 0;
 }
 .error-panel p {
@@ -243,7 +245,7 @@ form {
   overflow-wrap: anywhere;
 }
 .form-error {
-  font-size: 13px;
+  font-size: 15px;
   color: #a13f36;
 }
 .empty {
@@ -266,7 +268,7 @@ form {
 }
 .empty p {
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 15px;
   max-width: 380px;
   margin-bottom: 22px;
 }
@@ -282,7 +284,7 @@ form {
   padding: 15px 18px;
   border-radius: 8px;
   max-width: calc(100vw - 32px);
-  font-size: 13px;
+  font-size: 15px;
   z-index: 100;
 }
 .notice button {
@@ -295,7 +297,7 @@ form {
   flex-direction: column;
   gap: 7px;
   margin: 17px 0;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
 }
 .field small {
@@ -351,7 +353,7 @@ form {
   color: var(--foreground);
   padding: 20px;
   font:
-    12px/1.85 'JetBrains Mono Variable',
+    14px/1.85 'JetBrains Mono Variable',
     monospace;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -372,7 +374,7 @@ form {
   margin: 0 0 9px;
 }
 .page-heading p {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
   margin: 0;
 }
@@ -387,7 +389,7 @@ form {
   align-items: center;
 }
 .row-actions button {
-  font-size: 12px;
+  font-size: 14px;
 }
 .row-actions a {
   display: inline-flex;
@@ -404,14 +406,14 @@ form {
   margin: 0;
 }
 .section-heading > a {
-  font-size: 12px;
+  font-size: 14px;
   display: flex;
   gap: 5px;
   align-items: center;
   color: var(--accent-ink);
 }
 .section-heading > span {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
 }
 .open-section {
@@ -430,11 +432,11 @@ table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 13px;
+  font-size: 15px;
   white-space: nowrap;
 }
 th {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-muted);
   background: var(--surface);
@@ -459,7 +461,7 @@ td strong,
 }
 td small {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 5px;
 }
 td a {
@@ -484,7 +486,7 @@ tbody tr:hover {
 }
 .selection-bar p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 .selection-cell {
@@ -510,7 +512,7 @@ tbody tr:hover {
   overflow-wrap: anywhere;
 }
 .replay-result code {
-  font-size: 12px;
+  font-size: 14px;
 }
 .replay-accepted {
   color: var(--primary);
@@ -530,7 +532,7 @@ tbody tr:hover {
 .workspace-limit small,
 .limit-value span {
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 14px;
 }
 .workspace-limit p {
   margin: 4px 0;
@@ -557,7 +559,7 @@ tbody tr:hover {
   align-items: center;
   gap: 8px;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 .filter-bar input[type='date'] {
   width: 150px;
@@ -570,7 +572,7 @@ tbody tr:hover {
   margin-top: 18px;
 }
 .pager > span {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   margin-right: 8px;
 }
@@ -578,7 +580,7 @@ tbody tr:hover {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-secondary);
   background: var(--accent-soft);
   border: 1px solid var(--border);
@@ -624,11 +626,12 @@ tbody tr:hover {
 }
 .app-shell {
   display: grid;
-  grid-template-columns: 236px minmax(0, 1fr);
+  grid-template-columns: 252px minmax(0, 1fr);
   min-height: 100dvh;
 }
 .sidebar {
   height: 100dvh;
+  overflow-y: auto;
   position: sticky;
   top: 0;
   background: var(--sidebar);
@@ -646,7 +649,7 @@ tbody tr:hover {
 }
 .workspace-picker label {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
   margin: 0 0 8px 5px;
 }
@@ -658,7 +661,7 @@ tbody tr:hover {
   font-weight: 500;
 }
 .nav-label {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1.1px;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -673,7 +676,7 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   gap: 11px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 450;
   padding: 10px 13px;
   border-radius: 6px;
@@ -698,7 +701,7 @@ tbody tr:hover {
   padding-top: 24px;
 }
 .sidebar-bottom > a {
-  font-size: 12px;
+  font-size: 14px;
   display: flex;
   gap: 10px;
   align-items: center;
@@ -722,7 +725,7 @@ tbody tr:hover {
   border-radius: 7px;
   background: var(--accent-selected);
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 }
 .user-chip > div {
@@ -731,12 +734,12 @@ tbody tr:hover {
 }
 .user-chip strong {
   display: block;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 550;
 }
 .user-chip small {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -766,7 +769,7 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   gap: 13px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
 }
 .app-header > div:first-child > span:first-of-type {
@@ -777,7 +780,7 @@ tbody tr:hover {
   border: 0;
   background: transparent;
   padding-left: 0;
-  font-size: 12px;
+  font-size: 14px;
 }
 .main-content {
   padding: 39px 40px;
@@ -789,7 +792,7 @@ tbody tr:hover {
 .app-footer {
   padding: 16px 40px;
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 12px;
   display: flex;
   justify-content: space-between;
   border-top: 1px solid var(--border);
@@ -805,7 +808,7 @@ tbody tr:hover {
   color: #907038;
   border-radius: 6px;
   margin-bottom: 25px;
-  font-size: 13px;
+  font-size: 15px;
 }
 .support-banner {
   background: #fcf1dc;
@@ -815,14 +818,14 @@ tbody tr:hover {
   align-items: center;
   gap: 10px;
   padding: 12px 40px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .support-banner > span {
   flex: 1;
 }
 .support-banner button {
   background: #fff7e8;
-  font-size: 11px;
+  font-size: 13px;
 }
 .summary-toolbar {
   display: flex;
@@ -831,7 +834,7 @@ tbody tr:hover {
   margin-bottom: 22px;
 }
 .workspace-tag {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--accent-ink);
   background: var(--accent-soft);
   border: 1px solid var(--border);
@@ -839,7 +842,7 @@ tbody tr:hover {
   border-radius: 5px;
 }
 .summary-toolbar select {
-  font-size: 11px;
+  font-size: 13px;
   background: transparent;
 }
 .stats-grid {
@@ -863,7 +866,7 @@ tbody tr:hover {
   justify-content: space-between;
   gap: 10px;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 .stat > div svg {
   color: var(--text-muted);
@@ -897,7 +900,7 @@ tbody tr:hover {
   padding: 25px;
 }
 .usage-section h2 {
-  font-size: 13px;
+  font-size: 15px;
   margin-bottom: 28px;
 }
 .usage-section > strong {
@@ -906,13 +909,13 @@ tbody tr:hover {
   letter-spacing: -1px;
 }
 .usage-section > strong > span {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-muted);
   margin-left: 8px;
   letter-spacing: 0;
 }
 .usage-section > p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
   margin-top: 5px;
 }
@@ -924,7 +927,7 @@ tbody tr:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-secondary);
 }
 .activity-bars {
@@ -948,12 +951,12 @@ tbody tr:hover {
   border-radius: 3px 3px 0 0;
 }
 .activity-bars small {
-  font-size: 9px;
+  font-size: 12px;
   white-space: nowrap;
 }
 .activity-bars .mono {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
 }
 .project-list {
   border-top: 1px solid var(--border);
@@ -987,7 +990,7 @@ tbody tr:hover {
 .project-list p {
   margin: 0;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 .endpoint-list {
   display: grid;
@@ -1020,7 +1023,7 @@ tbody tr:hover {
   margin: 18px 0;
 }
 .subscription-list code {
-  font-size: 10px;
+  font-size: 12px;
   padding: 4px 7px;
   background: var(--surface);
   border-radius: 4px;
@@ -1034,7 +1037,7 @@ tbody tr:hover {
   padding: 23px 0;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  font-size: 13px;
+  font-size: 15px;
 }
 .detail-meta > div {
   display: flex;
@@ -1043,7 +1046,7 @@ tbody tr:hover {
   gap: 10px;
 }
 .detail-meta > div > span:first-child {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
 }
 .attempt-timeline {
@@ -1079,7 +1082,7 @@ tbody tr:hover {
   align-items: center;
   gap: 14px;
   margin-bottom: 8px;
-  font-size: 13px;
+  font-size: 15px;
 }
 .attempt-title > .mono {
   margin-left: auto;
@@ -1098,10 +1101,10 @@ tbody tr:hover {
 }
 .settings-section h2 {
   margin: 0 0 7px;
-  font-size: 14px;
+  font-size: 16px;
 }
 .settings-section p {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   margin: 0;
   max-width: 530px;
@@ -1114,7 +1117,7 @@ tbody tr:hover {
   margin: 28px 0;
 }
 .security-panel p {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-secondary);
 }
 .inline-controls {
@@ -1140,7 +1143,7 @@ tbody tr:hover {
   border: 1px solid var(--border);
   padding: 15px;
   border-radius: 7px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-secondary);
   margin-bottom: 23px;
 }
@@ -1155,7 +1158,7 @@ tbody tr:hover {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  font-size: 12px;
+  font-size: 14px;
   padding: 15px 0;
   border-bottom: 1px solid var(--border);
 }
@@ -1163,7 +1166,7 @@ tbody tr:hover {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--accent-ink);
   margin-top: 20px;
 }
@@ -1183,7 +1186,7 @@ tbody tr:hover {
   display: flex;
   gap: 30px;
   align-items: center;
-  font-size: 13px;
+  font-size: 15px;
 }
 .landing-header nav > a:last-child {
   display: flex;
@@ -1237,11 +1240,11 @@ tbody tr:hover {
 }
 .flow-index {
   font-family: 'JetBrains Mono Variable', monospace;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
 }
 .flow-node strong {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--foreground);
 }
@@ -1252,7 +1255,7 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
   margin-top: 20px;
 }
@@ -1278,7 +1281,7 @@ tbody tr:hover {
   line-height: 1.25;
 }
 .landing-features p {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-muted);
 }
 .landing-footer {
@@ -1291,11 +1294,11 @@ tbody tr:hover {
   color: var(--text-muted);
 }
 .landing-footer .brand {
-  font-size: 16px;
+  font-size: 18px;
 }
 .landing-footer > span,
 .landing-footer > a:last-child {
-  font-size: 11px;
+  font-size: 13px;
 }
 .landing-footer > a:last-child {
   display: flex;
@@ -1327,7 +1330,7 @@ tbody tr:hover {
   margin-bottom: 25px;
 }
 .auth-story p {
-  font-size: 16px;
+  font-size: 18px;
   color: var(--text-secondary);
   max-width: 370px;
 }
@@ -1336,11 +1339,11 @@ tbody tr:hover {
   gap: 10px;
   align-items: center;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 13px;
   margin-top: 42px;
 }
 .auth-story > span {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
 }
 .auth-main {
@@ -1357,7 +1360,7 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 .auth-form {
@@ -1373,7 +1376,7 @@ tbody tr:hover {
   margin-bottom: 12px;
 }
 .auth-form > p {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-secondary);
 }
 .auth-form form {
@@ -1383,7 +1386,7 @@ tbody tr:hover {
   margin-top: 10px;
 }
 .auth-form .forgot {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--accent-ink);
   display: block;
   text-align: right;
@@ -1391,7 +1394,7 @@ tbody tr:hover {
 }
 .auth-form .auth-switch {
   text-align: center;
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 35px;
 }
 .auth-switch a {
@@ -1417,7 +1420,7 @@ tbody tr:hover {
   margin-top: 42px;
 }
 .docs-intro {
-  font-size: 16px;
+  font-size: 18px;
   color: var(--text-secondary);
 }
 .docs-steps {
@@ -1428,7 +1431,7 @@ tbody tr:hover {
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.7;
   padding: 15px 0;
 }
@@ -1442,7 +1445,7 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
 }
 .docs-page section {
@@ -1451,7 +1454,7 @@ tbody tr:hover {
 }
 .docs-page section > p {
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 16px;
 }
 .invitation-page {
   max-width: 600px;
@@ -1663,7 +1666,7 @@ tbody tr:hover {
   .support-banner {
     padding: 10px 16px;
     flex-wrap: wrap;
-    font-size: 11px;
+    font-size: 13px;
   }
   .support-banner button {
     margin-left: auto;
@@ -1693,7 +1696,7 @@ tbody tr:hover {
     max-width: 430px;
   }
   .landing-hero p {
-    font-size: 16px;
+    font-size: 18px;
   }
   .landing-features {
     grid-template-columns: 1fr;
@@ -1782,5 +1785,5 @@ tbody tr:hover {
   min-width: 24px;
 }
 .activity-bars small {
-  font-size: 11px;
+  font-size: 13px;
 }

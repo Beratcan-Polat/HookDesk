@@ -12,7 +12,8 @@ const session: SupportSession = {
   user_id: 'user',
   workspace_id: 'workspace',
   reason: 'Help with delivery',
-  expires_at: '2026-10-23T10:30:00Z',
+  expires_at: null,
+  created_at: '2026-10-23T10:00:00Z',
   revoked_at: null,
   user: { id: 'user', name: 'Member', email: 'member@example.test' },
   workspace: { id: 'workspace', name: 'Workspace' },
@@ -27,13 +28,26 @@ function show(props: Partial<Parameters<typeof SupportAccess>[0]> = {}) {
   )
 }
 for (const locale of ['en', 'tr'] as const) {
-  it(`removes writable content at expiry without falling back to the administrator in ${locale}`, async () => {
+  it(`keeps unlimited support writable after thirty minutes and closes it when ended in ${locale}`, async () => {
     await i18n.changeLanguage(locale)
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-10-23T10:29:59Z'))
-    show()
+    const view = show()
     expect(screen.getByRole('button', { name: 'Write project' })).toBeVisible()
-    act(() => vi.advanceTimersByTime(1000))
+    act(() => vi.advanceTimersByTime(24 * 60 * 60 * 1000))
+    expect(screen.getByRole('button', { name: 'Write project' })).toBeVisible()
+    view.rerender(
+      <MemoryRouter>
+        <SupportAccess
+          enabled
+          session={{ ...session, revoked_at: '2026-10-24T10:00:00Z' }}
+          pending={false}
+          error={null}
+        >
+          <button>Write project</button>
+        </SupportAccess>
+      </MemoryRouter>,
+    )
     expect(screen.queryByRole('button', { name: 'Write project' })).toBeNull()
     expect(screen.getByRole('alert')).toHaveTextContent(
       locale === 'en' ? 'This support session has ended.' : 'Bu destek oturumu sona ermiş.',
@@ -41,7 +55,7 @@ for (const locale of ['en', 'tr'] as const) {
     expect(screen.getByRole('link')).toHaveAttribute('href', '/app/admin/support')
   })
 }
-it('blocks revoked sessions before their original expiry', () => {
+it('blocks explicitly ended sessions', () => {
   vi.useFakeTimers()
   vi.setSystemTime(new Date('2026-10-23T10:00:00Z'))
   show({ session: { ...session, revoked_at: '2026-10-23T10:00:00Z' } })

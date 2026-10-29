@@ -88,7 +88,8 @@ export interface SupportSession {
   user_id: string
   workspace_id: string
   reason: string
-  expires_at: string
+  expires_at: string | null
+  created_at: string
   revoked_at: string | null
   user: Pick<User, 'id' | 'name' | 'email'>
   workspace: { id: string; name: string }

@@ -1,15 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  Webhook,
-  ArrowRight,
-  Check,
-  Database,
-  Send,
-  Activity,
-  ShieldCheck,
-  ArrowUpRight,
-} from 'lucide-react'
+import { Webhook, Check, Database, Send, Activity, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LanguageSwitch } from '@/features/auth/Auth'
 export default function Landing() {
@@ -24,10 +15,7 @@ export default function Landing() {
         <nav>
           <Link to="/docs">{t('docs')}</Link>
           <LanguageSwitch />
-          <Link to="/sign-in">
-            {t('login')}
-            <ArrowUpRight size={14} />
-          </Link>
+          <Link to="/sign-in">{t('login')}</Link>
         </nav>
       </header>
       <main>
@@ -38,14 +26,10 @@ export default function Landing() {
             <p>{t('landingDescription')}</p>
             <div className="hero-actions">
               <Button size="lg" asChild>
-                <Link to="/sign-up">
-                  {t('getStarted')}
-                  <ArrowRight size={17} />
-                </Link>
+                <Link to="/sign-up">{t('getStarted')}</Link>
               </Button>
               <Link className="text-link" to="/docs">
                 {t('readDocs')}
-                <ArrowUpRight size={16} />
               </Link>
             </div>
           </div>
@@ -94,10 +78,7 @@ export default function Landing() {
           HookDesk
         </Link>
         <span>{t('landingFooter')}</span>
-        <a href="/openapi.json">
-          OpenAPI
-          <ArrowUpRight size={14} />
-        </a>
+        <a href="/openapi.json">OpenAPI</a>
       </footer>
     </div>
   )

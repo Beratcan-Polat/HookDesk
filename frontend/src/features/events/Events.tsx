@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { ArrowUpRight, Send, CheckCircle2, Clock3, XCircle } from 'lucide-react'
+import { Send, CheckCircle2, Clock3, XCircle } from 'lucide-react'
 import { useScope, AppLink, RequireProject, NewProjectButton } from '@/components/Layout'
 import { get, api, errorMessage } from '@/lib/api'
 import type { Page, EventItem, Delivery, Envelope } from '@/lib/types'
@@ -136,9 +136,7 @@ export function EventsList({ compact = false }: { compact?: boolean }) {
                   <th>{t('createdAt')}</th>
                   <th>{t('routing')}</th>
                   <th>{t('deliveries')}</th>
-                  <th>
-                    <span className="sr-only">{t('view')}</span>
-                  </th>
+                  <th>{t('view')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -158,10 +156,7 @@ export function EventsList({ compact = false }: { compact?: boolean }) {
                     </td>
                     <td className="mono">{event.deliveries_count}</td>
                     <td>
-                      <AppLink to={'/app/events/' + event.id}>
-                        <ArrowUpRight size={16} />
-                        <span className="sr-only">{t('view')}</span>
-                      </AppLink>
+                      <AppLink to={'/app/events/' + event.id}>{t('view')}</AppLink>
                     </td>
                   </tr>
                 ))}
@@ -289,10 +284,7 @@ export function EventDetailPage() {
                     </td>
                     <td className="mono">{d.attempt_count} / 6</td>
                     <td>
-                      <AppLink to={'/app/deliveries/' + d.id}>
-                        {t('view')}
-                        <ArrowUpRight size={13} />
-                      </AppLink>
+                      <AppLink to={'/app/deliveries/' + d.id}>{t('view')}</AppLink>
                     </td>
                   </tr>
                 ))}
@@ -507,10 +499,7 @@ export function OverviewPage() {
       <section className="open-section">
         <div className="section-heading">
           <h2>{t('recentEvents')}</h2>
-          <AppLink to="/app/events">
-            {t('view')}
-            <ArrowUpRight size={14} />
-          </AppLink>
+          <AppLink to="/app/events">{t('view')}</AppLink>
         </div>
         {project ? (
           <EventsList compact />

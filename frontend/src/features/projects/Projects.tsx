@@ -1,6 +1,6 @@
 import { useScope, NewProjectButton, AppLink } from '@/components/Layout'
 import { useTranslation } from 'react-i18next'
-import { ArrowUpRight, Layers } from 'lucide-react'
+import { Layers } from 'lucide-react'
 import { PageHeading, Empty, MutationDialog, Status } from '@/components/common'
 export default function ProjectsPage() {
   const { workspace, prefix, canWrite, canManage, supportId } = useScope()
@@ -56,7 +56,6 @@ export default function ProjectsPage() {
                 />
                 <AppLink className="table-primary" to={'/app/events?p=' + p.id}>
                   {t('events')}
-                  <ArrowUpRight size={15} />
                 </AppLink>
               </div>
             </article>

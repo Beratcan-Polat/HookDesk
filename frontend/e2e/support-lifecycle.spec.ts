@@ -3,7 +3,7 @@ import { signInAndStepUp } from './helpers/admin'
 import { browserControl, browserRequest, labels, readLifecycle } from './helpers/lifecycle'
 
 for (const locale of ['en', 'tr'] as const) {
-  test(`support countdown expires, blocks stale requests and preserves administrator login in ${locale}`, async ({
+  test(`unlimited support ends explicitly, blocks stale requests and preserves administrator login in ${locale}`, async ({
     page,
   }) => {
     test.setTimeout(150000)
@@ -22,7 +22,9 @@ for (const locale of ['en', 'tr'] as const) {
     await dialog
       .getByRole('combobox', { name: l.workspace, exact: true })
       .selectOption(fixture.workspace_id)
-    await dialog.getByLabel(l.reason, { exact: true }).fill('Browser lifecycle expiry verification')
+    await dialog
+      .getByLabel(l.reason, { exact: true })
+      .fill('Browser lifecycle support verification')
     const started = page.waitForResponse(
       (r) => r.url().endsWith('/support-sessions') && r.request().method() === 'POST',
     )
@@ -30,17 +32,11 @@ for (const locale of ['en', 'tr'] as const) {
     const session = (await (await started).json()).data as {
       id: string
       actor_id: string
-      expires_at: string
+      expires_at: string | null
       created_at: string
     }
     expect(session.actor_id).not.toBe(fixture.owner.id)
-    expect(
-      Math.abs(
-        new Date(session.expires_at).getTime() -
-          new Date(session.created_at).getTime() -
-          30 * 60000,
-      ),
-    ).toBeLessThan(1000)
+    expect(session.expires_at).toBeNull()
     await expect(page.locator('.support-banner')).toContainText('Browser ' + locale + ' owner')
     const supportUrl = `/app/projects?support=${session.id}&w=${fixture.workspace_id}&p=${fixture.project_id}`
     await page.clock.install()
@@ -52,13 +48,13 @@ for (const locale of ['en', 'tr'] as const) {
     })
     expect(before.status()).toBe(200)
 
-    // Advance the UI clock and expire only this fixture's database record; no test HTTP backdoor.
-    await page.clock.setFixedTime(new Date(new Date(session.expires_at).getTime() - 1000))
+    // Advancing the browser clock does not end an unlimited session.
+    await page.clock.setFixedTime(new Date(new Date(session.created_at).getTime() + 2 * 86400000))
     await page.clock.runFor(1000)
-    await expect(page.locator('.support-banner')).toContainText('0:01')
-    browserControl('expire-support', locale, session.id)
-    await page.clock.setFixedTime(new Date(new Date(session.expires_at).getTime() + 1000))
-    await page.clock.runFor(1000)
+    await expect(page.locator('.support-banner')).toBeVisible()
+    await expect(page.locator('main')).toBeVisible()
+    browserControl('end-support', locale, session.id)
+    await page.reload()
     await expect(page.getByRole('alert')).toHaveText(l.expired)
     await expect(page.locator('main')).toHaveCount(0)
     await expect(page.locator('.support-banner')).toHaveCount(0)

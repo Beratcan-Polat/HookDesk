@@ -1,6 +1,6 @@
 import SupportStartButton from '@/features/support/SupportStart'
 import SupportAccess from '@/features/support/SupportAccess'
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 import { Link, NavLink, Navigate, Outlet, useLocation, useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -9,7 +9,7 @@ import {
   LayoutDashboard,
   Layers,
   Radio,
-  ArrowDownToLine,
+  Inbox,
   KeyRound,
   Users,
   Settings,
@@ -20,7 +20,6 @@ import {
   LifeBuoy,
   LogOut,
   Menu,
-  ChevronRight,
   X,
 } from 'lucide-react'
 import { useMe, useLogout, LanguageSwitch } from '@/features/auth/Auth'
@@ -67,18 +66,8 @@ export function AppLink({
 }
 function SupportBanner({ session }: { session: SupportSession }) {
   const { t } = useTranslation()
-  const [remaining, setRemaining] = useState(0)
   const [params, setParams] = useSearchParams()
   const qc = useQueryClient()
-  useEffect(() => {
-    const tick = () =>
-      setRemaining(
-        Math.max(0, Math.floor((new Date(session.expires_at).getTime() - Date.now()) / 1000)),
-      )
-    tick()
-    const interval = setInterval(tick, 1000)
-    return () => clearInterval(interval)
-  }, [session.expires_at])
   async function end() {
     try {
       await api.delete('/api/admin/v1/support-sessions/' + session.id)
@@ -94,8 +83,7 @@ function SupportBanner({ session }: { session: SupportSession }) {
     <div className="support-banner">
       <LifeBuoy size={18} />
       <span>
-        {t('supportBand')} <strong>{session.user.name}</strong> · {Math.floor(remaining / 60)}:
-        {String(remaining % 60).padStart(2, '0')}
+        {t('supportBand')} <strong>{session.user.name}</strong> · {t('untilEnded')}
       </span>
       <Button size="sm" variant="outline" onClick={() => void end()}>
         {t('endSupport')}
@@ -108,7 +96,7 @@ const links = [
   ['/app/projects', 'projects', Layers],
   ['/app/events', 'events', Radio],
   ['/app/endpoints', 'endpoints', Webhook],
-  ['/app/sources', 'sources', ArrowDownToLine],
+  ['/app/sources', 'sources', Inbox],
   ['/app/keys', 'keys', KeyRound],
   ['/app/team', 'team', Users],
   ['/app/audit', 'audit', FileClock],
@@ -277,7 +265,6 @@ export default function Layout() {
                   <Menu size={20} />
                 </button>
                 <span>{admin ? t('admin') : workspace?.name || 'HookDesk'}</span>
-                <ChevronRight size={14} />
                 {!admin ? (
                   <select
                     aria-label={t('project')}
@@ -379,10 +366,7 @@ export function AdminStepUp() {
       label="stepUp"
       description="stepUpDescription"
       url="/api/admin/v1/step-up"
-      fields={[
-        { name: 'password', label: 'password', type: 'password', required: true },
-        { name: 'code', label: 'code', required: true },
-      ]}
+      fields={[{ name: 'password', label: 'password', type: 'password', required: true }]}
     />
   )
 }

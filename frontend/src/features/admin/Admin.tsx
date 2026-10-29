@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Shield, Users, Layers, Radio, ArrowUpRight } from 'lucide-react'
+import { Shield, Users, Layers, Radio } from 'lucide-react'
 import { AdminStepUp, AppLink, SupportStart } from '@/components/Layout'
 import { get } from '@/lib/api'
 import type { Envelope, Page, Row, SupportSession, WorkspaceMember } from '@/lib/types'
@@ -99,10 +99,7 @@ export function AdminOverview() {
               <code>{count}</code>
             </div>
           ))}
-          <AppLink to="/app/admin/deliveries">
-            {t('view')}
-            <ArrowUpRight size={15} />
-          </AppLink>
+          <AppLink to="/app/admin/deliveries">{t('view')}</AppLink>
         </section>
         <section>
           <h2>{t('health')}</h2>
@@ -114,10 +111,7 @@ export function AdminOverview() {
             <span>{t('scheduler')}</span>
             <DateText value={d.scheduler} />
           </div>
-          <AppLink to="/app/admin/health">
-            {t('view')}
-            <ArrowUpRight size={15} />
-          </AppLink>
+          <AppLink to="/app/admin/health">{t('view')}</AppLink>
         </section>
       </div>
     </>
@@ -347,14 +341,10 @@ export function AdminList({ kind }: { kind: Kind }) {
                     ))}
                     <td>
                       {kind === 'deliveries' ? (
-                        <AppLink to={'/app/admin/deliveries/' + row.id}>
-                          {t('view')}
-                          <ArrowUpRight size={14} />
-                        </AppLink>
+                        <AppLink to={'/app/admin/deliveries/' + row.id}>{t('view')}</AppLink>
                       ) : (
                         <Button variant="ghost" onClick={() => setSelected(row)}>
                           {t('view')}
-                          <ArrowUpRight size={14} />
                         </Button>
                       )}
                     </td>
@@ -671,7 +661,7 @@ export function AdminSupport() {
                 <th>{t('user')}</th>
                 <th>{t('workspace')}</th>
                 <th>{t('reason')}</th>
-                <th>{t('expires')}</th>
+                <th>{t('createdAt')}</th>
                 <th />
               </tr>
             </thead>
@@ -685,15 +675,15 @@ export function AdminSupport() {
                   <td>{s.workspace.name}</td>
                   <td>{s.reason}</td>
                   <td>
-                    <DateText value={s.expires_at} />
+                    <DateText value={s.created_at} />
                   </td>
                   <td>
-                    {!s.revoked_at && new Date(s.expires_at) > new Date() ? (
+                    {!s.revoked_at ? (
                       <AppLink to={'/app?support=' + s.id + '&w=' + s.workspace_id}>
                         {t('continue')}
                       </AppLink>
                     ) : (
-                      <Status value="expired" />
+                      <Status value="ended" />
                     )}
                   </td>
                 </tr>

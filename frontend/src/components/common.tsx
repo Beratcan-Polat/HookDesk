@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, ArrowRight, Check, Copy, LoaderCircle, X, Inbox } from 'lucide-react'
+import { Check, Copy, LoaderCircle, X, Inbox } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -152,22 +152,22 @@ export function Pager<T>({ page, onChange }: { page: Page<T>; onChange: (n: numb
         {t('page')} {n} {t('of')} {last}
       </span>
       <Button
-        size="icon"
+        size="sm"
         variant="outline"
         disabled={n <= 1}
         aria-label={t('previous')}
         onClick={() => onChange(n - 1)}
       >
-        <ArrowLeft size={15} />
+        {t('previous')}
       </Button>
       <Button
-        size="icon"
+        size="sm"
         variant="outline"
         disabled={n >= last}
         aria-label={t('next')}
         onClick={() => onChange(n + 1)}
       >
-        <ArrowRight size={15} />
+        {t('next')}
       </Button>
     </div>
   )
