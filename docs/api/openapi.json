@@ -5009,7 +5009,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5075,7 +5075,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5284,7 +5284,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5350,7 +5350,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5416,7 +5416,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5633,7 +5633,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5705,7 +5705,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5779,7 +5779,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5853,7 +5853,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5919,7 +5919,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -5985,7 +5985,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -6051,7 +6051,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -6216,7 +6216,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -6282,7 +6282,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -6491,7 +6491,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "requestBody": {
@@ -6644,7 +6644,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "requestBody": {
@@ -6995,7 +6995,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "requestBody": {
@@ -7051,7 +7051,7 @@
                         "description": "Operation completed without a response body."
                     },
                     "423": {
-                        "description": "Password and TOTP step-up required within five minutes."
+                        "description": "Password confirmation required within five minutes."
                     }
                 },
                 "parameters": [
@@ -7320,14 +7320,10 @@
                 "properties": {
                     "password": {
                         "type": "string"
-                    },
-                    "code": {
-                        "type": "string"
                     }
                 },
                 "required": [
-                    "password",
-                    "code"
+                    "password"
                 ]
             },
             "Reason": {

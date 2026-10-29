@@ -4,7 +4,6 @@ use App\Http\Middleware\AdminMutation;
 use App\Http\Middleware\AuditMutation;
 use App\Http\Middleware\EnsureSuperAdmin;
 use App\Http\Middleware\ProjectKey;
-use App\Http\Middleware\ProtectAdminTwoFactor;
 use App\Http\Middleware\RequestContext;
 use App\Http\Middleware\SupportContext;
 use Illuminate\Database\QueryException;
@@ -22,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
-        $middleware->web(append: [RequestContext::class, ProtectAdminTwoFactor::class]);
+        $middleware->web(append: [RequestContext::class]);
         $middleware->api(append: [RequestContext::class]);
         $middleware->validateCsrfTokens(except: ['ingest/*', 'receive/*']);
         $middleware->alias([

@@ -38,7 +38,7 @@ class PromoteAdmin extends Command
         DB::table('sessions')->where('user_id', $u->id)->delete();
         SupportSession::where('actor_id', $u->id)->whereNull('revoked_at')->update(['revoked_at' => now()]);
         app(Audit::class)->record('cli.admin_role_changed', $u, ['platform_role' => $u->platform_role], 'Operator CLI command');
-        $this->info('Role updated. Confirm TOTP in account settings before accessing the admin panel.');
+        $this->info('Role updated. Sign in with your password to access the admin panel.');
 
         return self::SUCCESS;
     }

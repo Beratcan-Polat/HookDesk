@@ -20,9 +20,9 @@ switch ($argv[1] ?? '') {
         $user = User::whereKey($fixture['security']['id'])->where('email', $fixture['security']['email'])->firstOrFail();
         echo json_encode(['secret' => decrypt($user->two_factor_secret)], JSON_THROW_ON_ERROR);
         break;
-    case 'expire-support':
+    case 'end-support':
         $session = SupportSession::whereKey($argv[3] ?? '')->where('workspace_id', $fixture['workspace_id'])->where('user_id', $fixture['owner']['id'])->whereHas('actor', fn ($q) => $q->where('email', 'admin-browser@hookdesk.test'))->firstOrFail();
-        $session->update(['expires_at' => now()->subSecond()]);
+        $session->update(['revoked_at' => now()]);
         break;
     default:
         throw new RuntimeException('Unknown browser control action.');

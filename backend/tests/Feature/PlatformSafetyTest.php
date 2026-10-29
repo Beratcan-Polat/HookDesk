@@ -17,7 +17,7 @@ beforeEach(function () {
 it('does not abandon the only usable admin in favor of an unconfigured bootstrap account', function () {
     $a = adminUser();
     $pending = User::factory()->create();
-    $pending->forceFill(['platform_role' => 'super_admin'])->save();
+    $pending->forceFill(['platform_role' => 'super_admin', 'email_verified_at' => null])->save();
     expect(fn () => app(AdminUsers::class)->change($a, ['platform_role' => 'user'], 'Protection test'))->toThrow(HttpException::class);
 });
 it('attributes ordinary endpoint changes to the correct workspace audit', function () {

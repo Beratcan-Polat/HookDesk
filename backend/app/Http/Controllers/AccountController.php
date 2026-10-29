@@ -13,7 +13,7 @@ class AccountController extends Controller
 {
     public function me(Request $r)
     {
-        return ['data' => $r->user(), 'two_factor_enabled' => (bool) $r->user()->two_factor_confirmed_at, 'admin_step_up_until' => ($r->hasSession() ? (int) $r->session()->get('admin_step_up_at', 0) : 0) + 300];
+        return ['data' => $r->user(), 'two_factor_enabled' => ! $r->user()->isSuperAdmin() && (bool) $r->user()->two_factor_confirmed_at, 'admin_step_up_until' => ($r->hasSession() ? (int) $r->session()->get('admin_step_up_at', 0) : 0) + 300];
     }
 
     public function profile(Request $r)
@@ -31,8 +31,8 @@ class AccountController extends Controller
         DB::transaction(function () use ($r) {
             $admins = User::where('platform_role', 'super_admin')->where('status', 'active')->orderBy('id')->lockForUpdate()->get();
             abort_if($r->user()->isSuperAdmin() && $admins->count() <= 1, 422, 'last_super_admin_protected');
-            $usable = $admins->filter(fn ($admin) => $admin->hasVerifiedEmail() && $admin->two_factor_confirmed_at);
-            abort_if($r->user()->isSuperAdmin() && $r->user()->two_factor_confirmed_at && $usable->count() <= 1, 422, 'last_super_admin_protected');
+            $usable = $admins->filter(fn ($admin) => $admin->hasVerifiedEmail());
+            abort_if($r->user()->isSuperAdmin() && $r->user()->hasVerifiedEmail() && $usable->count() <= 1, 422, 'last_super_admin_protected');
             $r->user()->forceFill(['status' => 'deletion_pending', 'deletion_requested_at' => now()])->save();
             SupportSession::where(fn ($q) => $q->where('actor_id', $r->user()->id)->orWhere('user_id', $r->user()->id))->whereNull('revoked_at')->update(['revoked_at' => now()]);
             DB::table('sessions')->where('user_id', $r->user()->id)->delete();

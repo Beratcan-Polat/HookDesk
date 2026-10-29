@@ -25,7 +25,7 @@ class ExportOpenApi extends Command
             'Source' => $object(['name' => $string, 'event_type' => ['type' => 'string', 'maxLength' => 100], 'mode' => ['enum' => ['capture_only', 'capture_and_forward']], 'enabled' => $boolean], ['name', 'event_type', 'mode']),
             'Key' => $object(['name' => $string, 'abilities' => ['type' => 'array', 'items' => ['enum' => ['events:read', 'events:write']]]], ['name', 'abilities']),
             'Invitation' => $object(['email' => ['type' => 'string', 'format' => 'email'], 'role' => ['enum' => ['admin', 'developer', 'viewer']]], ['email', 'role']),
-            'StepUp' => $object(['password' => $string, 'code' => $string], ['password', 'code']),
+            'StepUp' => $object(['password' => $string], ['password']),
             'Reason' => $object(['reason' => $reason], ['reason']),
             'UserChange' => $object(['name' => $string, 'status' => ['enum' => ['active', 'suspended']], 'platform_role' => ['enum' => ['user', 'super_admin']], 'reason' => $reason], ['reason']),
             'SupportSession' => $object(['user_id' => $string, 'workspace_id' => $string, 'reason' => $reason], ['user_id', 'workspace_id', 'reason']),
@@ -93,7 +93,7 @@ class ExportOpenApi extends Command
                     $operation['responses']['202'] = ['description' => 'Event persisted or replay accepted. Delivery is asynchronous.'];
                     $operation['responses']['204'] = ['description' => 'Operation completed without a response body.'];
                     if ($isAdmin && $action !== 'stepUp') {
-                        $operation['responses']['423'] = ['description' => 'Password and TOTP step-up required within five minutes.'];
+                        $operation['responses']['423'] = ['description' => 'Password confirmation required within five minutes.'];
                     }
                 }
                 if (str_starts_with($uri, 'ingest/')) {

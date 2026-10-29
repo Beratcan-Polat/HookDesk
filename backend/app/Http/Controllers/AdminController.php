@@ -32,16 +32,14 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AdminController extends Controller
 {
     public function stepUp(Request $r)
     {
-        $r->validate(['password' => 'required|string', 'code' => 'required|string']);
+        $r->validate(['password' => 'required|string']);
         abort_unless(Hash::check($r->input('password'), $r->user()->password), 422, 'invalid_credentials');
-        abort_unless(app(TwoFactorAuthenticationProvider::class)->verify(decrypt($r->user()->two_factor_secret), $r->input('code')), 422, 'invalid_two_factor_code');
         $r->session()->put('admin_step_up_at', now()->timestamp);
 
         return response()->noContent();

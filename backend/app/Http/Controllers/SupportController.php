@@ -26,7 +26,7 @@ class SupportController extends Controller
             User::whereKey($r->user()->id)->lockForUpdate()->firstOrFail();
             SupportSession::where('actor_id', $r->user()->id)->whereNull('revoked_at')->update(['revoked_at' => now()]);
 
-            return SupportSession::create([...$data, 'actor_id' => $r->user()->id, 'reason' => $r->input('reason'), 'expires_at' => now()->addMinutes(30)]);
+            return SupportSession::create([...$data, 'actor_id' => $r->user()->id, 'reason' => $r->input('reason'), 'expires_at' => null]);
         }, 3);
         app(Audit::class)->record('admin.support_started', $s, reason: $s->reason, workspaceId: $s->workspace_id);
 

@@ -12,7 +12,7 @@ class SupportContext
     public function handle(Request $request, Closure $next)
     {
         $s = SupportSession::findOrFail($request->route('supportSession'));
-        abort_unless($s->actor_id === $request->user()->id && ! $s->revoked_at && $s->expires_at->isFuture(), 403, 'support_session_expired');
+        abort_unless($s->actor_id === $request->user()->id && ! $s->revoked_at, 403, 'support_session_ended');
         abort_unless($s->user->status === 'active' && Membership::where('workspace_id', $s->workspace_id)->where('user_id', $s->user_id)->exists(), 403, 'support_target_unavailable');
         $request->attributes->set('support_session', $s);
         $request->attributes->set('effective_user', $s->user);
