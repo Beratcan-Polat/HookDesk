@@ -15,7 +15,7 @@ Backend'i Laravel 13, arayüzü React 19 ve TypeScript ile ayrı uygulamalar ola
 - Başarısız teslimatlarda yeniden deneme, elle tekrar gönderim ve deneme geçmişi.
 - Aynı isteğin tekrarında yeni olay oluşmasını önleyen idempotency desteği.
 - Kullanım limitleri, hedef duraklatma ve işlem kayıtları.
-- Süper Admin yönetimi ve kullanıcı adına işlem yapılabilen, 30 dakikayla sınırlı destek oturumları.
+- Süper Admin yönetimi ve kullanıcı adına işlem yapılabilen, elle sonlandırılan destek oturumları.
 - Türkçe ve İngilizce arayüz.
 
 ## Teslimat akışı
@@ -93,13 +93,13 @@ docker compose exec app php artisan hookdesk:demo
 
 Bu komut, rastgele parolalı bir geliştirme hesabı ve test hedefi oluşturur. Hesap bilgileri komut çıktısında gösterilir. Test hedefi ilk iki isteğe `500`, sonraki isteğe `200` döner; panelde yeniden deneme akışı izlenebilir. Komut üretim ortamında çalışmaz.
 
-İlk Süper Admin hesabı için, e-postası doğrulanmış bir kullanıcıda iki aşamalı doğrulama etkinleştirildikten sonra:
+İlk Süper Admin hesabını e-postası doğrulanmış etkin bir kullanıcıya atamak için:
 
 ```sh
 docker compose exec app php artisan hookdesk:admin admin@example.com
 ```
 
-Yeniden girişte yönetim menüsü açılır. Hassas işlemler için parola ve güncel TOTP koduyla yapılan doğrulama beş dakika geçerlidir; yönetim işlemlerinde gerekçe kaydedilir. Fortify aynı TOTP kodunun tekrar kullanılmasını engeller. Destek oturumlarında hem yönetici hem de adına işlem yapılan kullanıcı kaydedilir; işlemler kullanıcının çalışma alanı yetkileriyle sınırlıdır.
+E-posta ve parolayla giriş yapıldığında yönetim menüsü açılır. Süper Admin için Authenticator kodu gerekmez. Hassas işlemlerde parola doğrulaması beş dakika geçerlidir ve işlem gerekçesi kaydedilir. Normal kullanıcılar isterse iki aşamalı doğrulamayı açabilir. Destek oturumlarında hem yönetici hem de adına işlem yapılan kullanıcı kaydedilir; işlemler kullanıcının çalışma alanı yetkileriyle sınırlıdır. Destek oturumunda süre sınırı yoktur; elle sonlandırma, yeni oturum başlatma veya hesap/yetki değişikliğiyle kapanır.
 
 ## API kullanımı
 

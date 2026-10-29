@@ -22,7 +22,7 @@ sudo sh infra/security/egress.sh
 
 The firewall helper must be rerun after worker replacement. It is intended for a Linux Docker host with the iptables backend and IPv6-disabled project networks. Validate it on the actual host; nftables-only hosts need equivalent native rules. PHP-level URL/DNS/IP protections remain mandatory independently.
 
-Check /up, registration, verification mail, TOTP, one successful sandbox event, a retry scenario, an incoming source and support start/end. The public gateway returns 404 for /receive paths.
+Check /up, registration, verification mail, password-only administrator access, optional user 2FA, one successful sandbox event, a retry scenario, an incoming source and support start/end. The public gateway returns 404 for /receive paths.
 
 ## Monitoring
 

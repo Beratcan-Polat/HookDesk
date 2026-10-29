@@ -20,7 +20,7 @@ A timeout or lost response can leave the destination having processed the event.
 
 - Platform role and workspace role are separate.
 - Workspace access always validates membership and resource ownership.
-- Super Admin uses dedicated APIs, confirmed TOTP, recent step-up and reasons.
+- Super Admin uses dedicated APIs, verified email, recent password confirmation and reasons. Support sessions remain active until explicitly ended or revoked; they have no automatic expiry.
 - Support retains the actual actor and checks the target's current role for every operation.
 - Secrets are hashed or encrypted according to whether they must be recovered for delivery.
 - Privileged payloads are fetched separately with a reason and no-store response.

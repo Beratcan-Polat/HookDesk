@@ -58,6 +58,14 @@ The rental integration's [CI run](https://github.com/Beratcan-Polat/arac-kiralam
 
 The integration preserves the rental repository's `main` branch and runs with separate databases and ports. It does not change HookDesk's public target validation or verify production HTTPS/SMTP. The [demo guide](portfolio-demo.md#reservation-integration) describes how to reproduce the flow.
 
+## Administrator access and interface update — 29 October 2026
+
+Administrator sign-in and sensitive-operation confirmation now use the password without requiring an authenticator code. Existing administrator accounts are covered by the login tests; regular accounts retain optional 2FA. Support has no automatic deadline and remains subject to explicit termination, replacement and account/permission revocation. Migration preserves the ended state of expired legacy sessions.
+
+The updated backend suite passed 62 tests with 210 assertions on isolated PostgreSQL and Redis, including password checks, last-verified-administrator protection and unlimited support lifecycle. Frontend coverage passed 19 tests; TypeScript, ESLint, Pint and Larastan checks passed. Browser journeys now check password-only administrator entry and support that remains active after advancing the browser clock, then rejects stale reads/writes after revocation.
+
+I enlarged interface text and form controls, retained the existing palette, and replaced arrow-only actions with text labels. The sign-in screen was checked at a 390-pixel viewport with no horizontal overflow. Current browser results are recorded in GitHub Actions.
+
 ## Release checks
 
 Production validation includes live email delivery, HTTPS, host egress rules, worker recovery, off-site backups, restore tests and monitoring. These checks are tracked in the [release checklist](runbooks/smoke-check.md) and [deployment guide](runbooks/deployment.md).

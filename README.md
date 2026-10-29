@@ -15,7 +15,7 @@ I separated the Laravel 13 backend from the React 19 and TypeScript frontend. Po
 - Automatic retries, manual replays and an attempt history for each delivery.
 - Idempotency support to prevent duplicate events when a request is repeated.
 - Usage limits, endpoint pausing and audit logs.
-- Super Admin controls and scoped, writable support sessions that expire after 30 minutes.
+- Super Admin controls and scoped, writable support sessions that remain open until explicitly ended.
 - English and Turkish interfaces.
 
 ## Delivery flow
@@ -93,13 +93,13 @@ docker compose exec app php artisan hookdesk:demo
 
 This creates a development account with a random password and a test destination. Credentials are printed in the command output. The destination returns `500` for its first two requests and `200` for the next one, making the retry history visible in the dashboard. This command is disabled in production.
 
-To create the first Super Admin, verify an account's email and enable two-factor authentication, then run:
+To create the first Super Admin, use an active account with a verified email address:
 
 ```sh
 docker compose exec app php artisan hookdesk:admin admin@example.com
 ```
 
-Sign in again to open the administration menu. Password and TOTP verification grants five minutes of access for sensitive operations, and administrative changes require a reason. Fortify rejects TOTP code reuse. Support sessions retain both the administrator and the user being assisted, and enforce that user's workspace permissions.
+Sign in with your email and password to open the administration menu. Password confirmation grants five minutes of access for sensitive operations, and administrative changes require a reason. Super Admin accounts do not need an authenticator code; regular users can optionally enable two-factor authentication. Support sessions retain both the administrator and the user being assisted, and enforce that user's workspace permissions. Support has no time limit; it ends when stopped, replaced by a new support session, or revoked by an account or permission change.
 
 ## API usage
 

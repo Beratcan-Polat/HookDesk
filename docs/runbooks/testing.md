@@ -51,7 +51,7 @@ Save its JSON output to a Git-ignored file and set `E2E_ADMIN_FILE` to that file
 
 The helper refreshes the test administrator's credentials and creates separate English and Turkish workspaces, verified/unverified members and synthetic terminal deliveries for panel tests. These workspaces are used for real ownership transfers and limit changes; keep this data in the browser-test database.
 
-For invitation, enrollment and expiry tests, use `APP_ENV=testing` and a database named `hookdesk_browser` (or `hookdesk_browser_<suffix>`). Create the additional fixtures from `backend` and save the output privately:
+For invitation, enrollment and support-lifecycle tests, use `APP_ENV=testing` and a database named `hookdesk_browser` (or `hookdesk_browser_<suffix>`). Create the additional fixtures from `backend` and save the output privately:
 
 ```sh
 php tests/Support/seed-lifecycle.php > ../.runtime/browser-lifecycle.json
@@ -68,15 +68,15 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-The twelve journeys cover public navigation, English/Turkish text, mobile layout, login errors, password recovery, event publishing, administrator TOTP, step-up and writable support sessions. The panel journeys exercise bulk replay, limit overrides, restoration of inherited defaults and ownership transfer to a verified member. Administrator helpers wait for fresh authenticator intervals because Fortify rejects TOTP reuse.
+The twelve journeys cover public navigation, English/Turkish text, mobile layout, login errors, password recovery, event publishing, password-only administrator login, password confirmation and writable support sessions. The panel journeys exercise bulk replay, limit overrides, restoration of inherited defaults and ownership transfer to a verified member. Administrator login and step-up helpers assert that no authenticator code is requested.
 
 Six additional journeys run in English and Turkish:
 
 - Team invitations: queued SMTP, translated email, mismatched email rejection, expired and reused invitation rejection, successful acceptance and viewer write restrictions.
 - Two-factor authentication: QR enrollment, rejection of an invalid code, confirmation, recovery codes hidden after reload, authenticator login, recovery login, rejection of a consumed code and acceptance of a different code. These tests disable screenshots and traces for enrollment screens.
-- Support expiry: the server grants 30 minutes, a permitted write succeeds, the countdown removes product controls at expiry, stale reads/writes return `403`, reloading cannot restore access and the real administrator remains signed in.
+- Support lifecycle: the server returns no expiry, permitted writes succeed, advancing the browser clock by two days leaves the session active, explicit revocation removes product controls, stale reads/writes return `403` and the real administrator remains signed in.
 
-The support tests advance the browser clock and expire the matching isolated database record; they do not wait thirty minutes or rely only on a client-side deadline.
+The support tests advance the browser clock and revoke the matching isolated database record to verify both unlimited duration and server-side termination.
 
 Screenshots and failure traces are written to the ignored `test-results` and `playwright-report` directories.
 
