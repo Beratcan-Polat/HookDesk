@@ -1,42 +1,42 @@
 # HookDesk
 
-[Türkçe](README.tr.md) · [Architecture](docs/architecture/overview.md) · [API](docs/api/openapi.json) · [Testing](docs/runbooks/testing.md)
+**Türkçe** · [English](README.en.md) · [Mimari](docs/architecture/overview.md) · [API](docs/api/openapi.json) · [Testler](docs/runbooks/testing.md)
 
-I built HookDesk to manage webhook delivery between applications and make each delivery traceable. The starting point was a common failure: a destination goes offline, an event cannot be delivered, and there is no clear record of what happened or a way to retry it.
+HookDesk'i, uygulamalar arasında webhook ile taşınan olayların teslimatını ve takibini yönetmek için geliştirdim. Bir hedef servis yanıt vermediğinde olayın kaybolmaması, gönderimin yeniden denenmesi ve ne olduğunu panelden görebilmek bu projenin çıkış noktası oldu.
 
-I separated the Laravel 13 backend from the React 19 and TypeScript frontend. PostgreSQL stores events and delivery state; Redis handles queueing, caching and rate limits.
+Backend'i Laravel 13, arayüzü React 19 ve TypeScript ile ayrı uygulamalar olarak kurdum. Olayları ve teslimat durumlarını PostgreSQL'de saklıyorum; Redis'i kuyruk, önbellek ve hız sınırları için kullanıyorum.
 
-## Features
+## Özellikler
 
-- Email verification, password recovery and two-factor authentication.
-- Workspaces, projects, team invitations and role-based permissions.
-- Project API keys and incoming webhook sources.
-- Event-type subscriptions and outgoing requests signed with HMAC-SHA256.
-- Automatic retries, manual replays and an attempt history for each delivery.
-- Idempotency support to prevent duplicate events when a request is repeated.
-- Usage limits, endpoint pausing and audit logs.
-- Super Admin controls and scoped, writable support sessions that remain open until explicitly ended.
-- English and Turkish interfaces.
+- E-posta doğrulama, şifre sıfırlama ve normal kullanıcılar için isteğe bağlı iki aşamalı doğrulama.
+- Çalışma alanları, projeler, ekip davetleri ve rol bazlı yetkiler.
+- Proje bazlı API anahtarları ve gelen webhook kaynakları.
+- Olay türüne göre hedef abonelikleri ve HMAC-SHA256 ile imzalı gönderim.
+- Başarısız teslimatlarda yeniden deneme, elle tekrar gönderim ve deneme geçmişi.
+- Aynı isteğin tekrarında yeni olay oluşmasını önleyen idempotency desteği.
+- Kullanım limitleri, hedef duraklatma ve işlem kayıtları.
+- Süper Admin yönetimi ve kullanıcının yetkileriyle sınırlı, süre sınırı olmayan destek oturumları.
+- Türkçe ve İngilizce arayüz.
 
-## Delivery flow
+## Teslimat akışı
 
-1. The API validates the key, project access and usage limits.
-2. The event and its deliveries are saved in one PostgreSQL transaction.
-3. A worker sends the signed HTTP request and records the result.
-4. Transient failures are rescheduled. A scheduler recovers due or interrupted work from the database if queue messages are lost.
+1. API anahtarı, proje yetkisi ve kullanım limiti kontrol edilir.
+2. Olay ve ilgili teslimatlar aynı PostgreSQL transaction'ında kaydedilir.
+3. Worker, hedefe imzalı HTTP isteğini gönderir ve sonucu kaydeder.
+4. Geçici hatalarda gönderim yeniden planlanır. Zamanlayıcı, kuyrukta kaybolan veya yarıda kalan işleri veritabanından tekrar işleme alır.
 
-A `202` response means the event has been durably accepted. Delivery order is not guaranteed, and a destination may receive the same event more than once. I included event-ID deduplication in the example receiver for that reason.
+API'nin döndürdüğü `202`, olayın kalıcı olarak kabul edildiğini belirtir. Teslimat sırası garanti edilmez ve aynı olay alıcıya birden fazla kez ulaşabilir. Örnek alıcıda bu nedenle olay kimliğiyle tekilleştirme uyguladım.
 
-## Stack
+## Teknolojiler
 
-- **Backend:** PHP 8.4, Laravel 13, Eloquent, Sanctum and Fortify.
-- **Frontend:** React 19, TypeScript, Vite, React Router, TanStack Query, Tailwind CSS, shadcn/ui and i18next.
-- **Data and infrastructure:** PostgreSQL 18, Redis 8, Docker Compose, Caddy and Mailpit.
-- **Testing and quality:** Pest, Larastan, Pint, Vitest, React Testing Library, Playwright and GitHub Actions.
+- **Backend:** PHP 8.4, Laravel 13, Eloquent, Sanctum, Fortify.
+- **Frontend:** React 19, TypeScript, Vite, React Router, TanStack Query, Tailwind CSS, shadcn/ui, i18next.
+- **Veri ve altyapı:** PostgreSQL 18, Redis 8, Docker Compose, Caddy, Mailpit.
+- **Test ve kalite:** Pest, Larastan, Pint, Vitest, React Testing Library, Playwright ve GitHub Actions.
 
-## Getting started
+## Kurulum
 
-Docker Engine and Docker Compose are required. On Windows, use Docker Desktop with Linux containers and WSL 2.
+Docker Engine ve Docker Compose gerekir. Windows'ta Docker Desktop, Linux konteynerleri ve WSL 2 ile kullanılmalıdır.
 
 ```sh
 git clone https://github.com/Beratcan-Polat/HookDesk.git
@@ -45,7 +45,7 @@ cd HookDesk
 
 ### Windows
 
-The setup script prepares the environment file, generates the application key, starts the services and runs migrations:
+Kurulum betiği ortam dosyasını hazırlar, uygulama anahtarını oluşturur, servisleri başlatır ve migration'ları çalıştırır:
 
 ```powershell
 .\infra\scripts\setup.ps1
@@ -53,7 +53,7 @@ The setup script prepares the environment file, generates the application key, s
 
 ### Linux
 
-From a fresh clone:
+Yeni bir klonda:
 
 ```sh
 cp .env.example .env
@@ -63,47 +63,57 @@ docker compose run --rm --user root app sh -c 'chown -R www-data:www-data vendor
 docker compose run --rm app php artisan key:generate --show
 ```
 
-Set `APP_KEY` in the root `.env` file to the value printed by the last command, then run:
+Son komutun ürettiği değeri kök dizindeki `.env` dosyasının `APP_KEY` alanına yazdıktan sonra:
 
 ```sh
 docker compose up -d
 docker compose exec app php artisan migrate --force
 ```
 
-- Application: [localhost:8080](http://localhost:8080)
-- Development email: [localhost:8025](http://localhost:8025)
+- Uygulama: [localhost:8080](http://localhost:8080)
+- Geliştirme e-postaları: [localhost:8025](http://localhost:8025)
 
-To check the running Docker stack end to end with Node.js 24:
+Çalışan Docker ortamını Node.js 24 ile uçtan uca kontrol etmek için:
 
 ```sh
 node infra/scripts/smoke.mjs
 ```
 
-This exercises registration, email verification, API keys, signed delivery and retries against the actual services. I documented setup, restarts and the recovery check in the [Docker development guide](docs/runbooks/docker-development.md).
+Bu kontrol kayıt, e-posta doğrulama, API anahtarı, imzalı teslimat ve yeniden deneme akışını gerçek servislerle çalıştırır. Kurulum, servisleri yeniden başlatma ve kesinti testi için [Docker geliştirme rehberini](docs/runbooks/docker-development.md) ekledim.
 
-I also documented [development without Docker](docs/runbooks/native-development.md).
+Docker kullanmadan geliştirme için [yerel kurulum rehberini](docs/runbooks/native-development.md) hazırladım.
 
-## Trying the application
+## Uygulamayı deneme
 
-Register through the application and open the verification email in Mailpit. To start with a sample workspace instead:
+Kayıt ekranından hesap açılabilir; doğrulama e-postaları Mailpit üzerinden görüntülenir. Hazır bir çalışma alanıyla başlamak için:
 
 ```sh
 docker compose exec app php artisan hookdesk:demo
 ```
 
-This creates a development account with a random password and a test destination. Credentials are printed in the command output. The destination returns `500` for its first two requests and `200` for the next one, making the retry history visible in the dashboard. This command is disabled in production.
+Bu komut, rastgele parolalı bir geliştirme hesabı ve test hedefi oluşturur. Hesap bilgileri komut çıktısında gösterilir. Test hedefi ilk iki isteğe `500`, sonraki isteğe `200` döner; panelde yeniden deneme akışı izlenebilir. Komut üretim ortamında çalışmaz.
 
-To create the first Super Admin, use an active account with a verified email address:
+İlk Süper Admin hesabını e-postası doğrulanmış etkin bir kullanıcıya atamak için:
 
 ```sh
 docker compose exec app php artisan hookdesk:admin admin@example.com
 ```
 
-Sign in with your email and password to open the administration menu. Password confirmation grants five minutes of access for sensitive operations, and administrative changes require a reason. Super Admin accounts do not need an authenticator code; regular users can optionally enable two-factor authentication. Support sessions retain both the administrator and the user being assisted, and enforce that user's workspace permissions. Support has no time limit; it ends when stopped, replaced by a new support session, or revoked by an account or permission change.
+### Yönetim ve destek
 
-## API usage
+Süper Admin hesabına e-posta ve parolayla giriş yapılır; Authenticator kodu istenmez. Hassas değişikliklerde işlem gerekçesi ve beş dakika geçerli bir parola onayı gerekir. Bu onay süresi, destek oturumunu sınırlandırmaz.
 
-Publish events through `POST /api/v1/events`, using a project API key in the `Authorization: Bearer ...` header and `Content-Type: application/json`:
+Destek oturumlarını, yöneticinin sorunu kullanıcının çalışma alanında inceleyip o kullanıcının yetkileriyle işlem yapabilmesi için ekledim:
+
+- Destek oturumunda süre sınırı yoktur. Yönetici elle sonlandırır; yeni oturum başlatıldığında önceki oturum kapanır.
+- Üyelik ve yetkiler her istekte kontrol edilir. Hesabın askıya alınması veya yöneticilik rolünün kaldırılması erişimi sonlandırır.
+- İşlem kayıtlarında hem yönetici hem de adına işlem yapılan kullanıcı korunur.
+
+Normal kullanıcılar kendi hesaplarında isterse iki aşamalı doğrulamayı açabilir.
+
+## API kullanımı
+
+Olay kabulü için `POST /api/v1/events` kullanılır. İstek, proje API anahtarını `Authorization: Bearer ...` başlığında taşır ve `Content-Type: application/json` ile gönderilir:
 
 ```json
 {
@@ -115,15 +125,15 @@ Publish events through `POST /api/v1/events`, using a project API key in the `Au
 }
 ```
 
-The optional `Idempotency-Key` header maps an identical raw request body to the same event for 24 hours. I included an [example receiver](examples/receiver.php) for signature verification and deduplication, and an [OpenAPI contract](docs/api/openapi.json) for the API routes.
+İsteğe bağlı `Idempotency-Key` başlığı 24 saat boyunca aynı ham istek gövdesini aynı olayla eşleştirir. İmza doğrulaması ve olay tekilleştirme için [örnek alıcıyı](examples/receiver.php), tüm uçlar için [OpenAPI sözleşmesini](docs/api/openapi.json) ekledim.
 
-## Vehicle rental integration
+## Araç kiralama entegrasyonu
 
-I connected HookDesk to reservation confirmations in my vehicle rental project. The Java application saves the reservation and its outbound event in one MySQL transaction. HookDesk accepts `rental.created` and delivers the signed event to the Python email service.
+HookDesk'i araç kiralama projemde rezervasyon onayları için kullandım. Java uygulaması rezervasyonu ve gönderilecek olayı aynı MySQL transaction'ında kaydediyor; HookDesk `rental.created` olayını kabul edip imzalı olarak Python e-posta servisine teslim ediyor.
 
-I tested normal delivery, a receiver outage and recovery of events queued in Java while HookDesk was unavailable, using a separate Docker stack. All three scenarios passed locally and in GitHub Actions. The integration lives on a [separate branch](https://github.com/Beratcan-Polat/arac-kiralama/tree/feature/hookdesk-integration), preserving the rental project's main version. The [integration guide](https://github.com/Beratcan-Polat/arac-kiralama/blob/feature/hookdesk-integration/docs/hookdesk-integration.md) covers setup and usage; the [demo guide](docs/portfolio-demo.md#reservation-integration) provides a short walkthrough.
+Normal teslimatı, e-posta alıcısının kesilmesini ve HookDesk kapalıyken olayın Java tarafında bekleyip daha sonra gönderilmesini ayrı Docker ortamında test ettim. Üç senaryo da yerelde ve GitHub Actions'ta geçti. Araç kiralamanın ana sürümünü koruyup entegrasyonu [ayrı dalda](https://github.com/Beratcan-Polat/arac-kiralama/tree/feature/hookdesk-integration) tuttum. Kurulum ve kullanım adımları [entegrasyon rehberinde](https://github.com/Beratcan-Polat/arac-kiralama/blob/feature/hookdesk-integration/docs/hookdesk-integration.md), kısa gösterim akışı [demo belgesinde](docs/portfolio-demo.md#reservation-integration).
 
-## Tests
+## Testler
 
 ```sh
 cd backend
@@ -137,21 +147,21 @@ npm run test
 npm run build
 ```
 
-PostgreSQL and Redis integration tests require isolated test databases. Playwright journeys require the application services to be running. Environment variables and commands are in the [testing guide](docs/runbooks/testing.md); recorded results are in the [validation notes](docs/verification.md).
+PostgreSQL ve Redis entegrasyon testleri ayrı test veritabanlarıyla çalıştırılmalıdır. Playwright senaryoları çalışan uygulama servislerini gerektirir. Ortam değişkenleri ve komutlar [test rehberinde](docs/runbooks/testing.md), mevcut sonuçlar [doğrulama notlarında](docs/verification.md) yer alıyor.
 
-I added a separate Docker load-test harness for acceptance latency, queue/delivery times and worker scaling. Run `node infra/performance/run.mjs` from the repository root. It creates an isolated stack and saves JSON/HTML reports. The [performance guide](docs/runbooks/performance.md) explains the workload and measurement limits.
+Kabul yanıt süresini, kuyruk/teslimat sürelerini ve worker sayısının etkisini ölçmek için ayrı bir Docker yük testi ekledim. Proje kökünde `node infra/performance/run.mjs` komutuyla çalışır; izole test ortamı oluşturup JSON/HTML raporlarını kaydeder. Senaryoları ve ölçüm sınırlarını [performans rehberinde](docs/runbooks/performance.md) açıkladım.
 
-## Documentation
+## Dokümantasyon
 
-- [Architecture and delivery model](docs/architecture/overview.md)
-- [Technical decisions](docs/decisions)
-- [API authentication](docs/api/authentication.md)
-- [End-to-end demo](docs/portfolio-demo.md)
-- [Linux deployment, backups and recovery](docs/runbooks/deployment.md)
-- [Release checks](docs/runbooks/smoke-check.md)
+- [Mimari ve teslimat modeli](docs/architecture/overview.md)
+- [Teknik kararlar](docs/decisions)
+- [API kimlik doğrulaması](docs/api/authentication.md)
+- [Uçtan uca demo akışı](docs/portfolio-demo.md)
+- [Linux sunucusuna dağıtım, yedekleme ve geri yükleme](docs/runbooks/deployment.md)
+- [Yayın öncesi kontroller](docs/runbooks/smoke-check.md)
 
-The project is in development; a public demo has not been deployed yet. Production deployment requires domain, SMTP and server configuration.
+Proje geliştirme aşamasında; canlı demo henüz yayınlanmadı. Üretim dağıtımı için alan adı, SMTP ve sunucu ayarları ayrıca yapılandırılmalıdır.
 
-## License
+## Lisans
 
 [MIT](LICENSE)
